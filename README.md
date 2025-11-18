@@ -1,7 +1,3 @@
-¡Excelente idea\! Un archivo `README.md` bien estructurado es esencial para cualquier proyecto en GitHub. [cite\_start]Basándonos en la descripción del proyecto de la Universidad Nacional Experimental de Guayana (UNEG)[cite: 1, 2], aquí tienes una propuesta de README para el repositorio de **Hiring Group**.
-
-Utilizaré Markdown para un formato claro y profesional.
-
 -----
 
 # 🚀 Proyecto: Sistema Web de Reclutamiento y Nómina para Hiring Group
@@ -125,6 +121,5 @@ Asegúrate de tener instalado:
 
 -----
 
-¿Hay alguna sección en particular de la que te gustaría un poco más de detalle o que deba ser modificada?
 
 
