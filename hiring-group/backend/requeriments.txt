@@ -1,0 +1,40 @@
+# Requerimientos para backend de proyecto de búsqueda de empleo
+Django>=4.2
+djangorestframework
+djangorestframework-simplejwt
+django-filter
+django-cors-headers
+psycopg2-binary
+python-dotenv
+Pillow
+gunicorn
+whitenoise
+
+# Búsqueda y indexado
+elasticsearch>=7.17.0
+elasticsearch-dsl
+
+# Tareas en segundo plano / mensajería
+celery
+redis
+
+# Websockets / notificaciones en tiempo real (opcional)
+channels
+channels-redis
+
+# Documentación API
+drf-yasg
+
+# Testeo y calidad de código
+pytest
+pytest-django
+pytest-cov
+factory-boy
+coverage
+black
+isort
+flake8
+
+# Tipado (opcional)
+mypy
+typing-extensions
