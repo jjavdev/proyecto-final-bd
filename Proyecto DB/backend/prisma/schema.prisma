@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  ADMIN
+  CHOFER
+  CLIENTE
+  PERSONAL_ADMIN
+}
+
+model Usuario {
+  @@map("usuarios")
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  password_hash  String
+  nombre         String
+  apellido       String
+  cedula         String    @unique
+  telefono       String
+  rol            Rol
+  activo         Boolean   @default(true)
+  creado_en      DateTime  @default(now())
+  actualizado_en DateTime  @updatedAt
+
+  chofer          Chofer?
+  cliente         Cliente?
+  personal_admin  PersonalAdmin?
+}
+
+model Chofer {
+  @@map("choferes")
+  id                Int      @id @default(autoincrement())
+  usuario_id        Int      @unique
+  banco_id          Int
+  nro_cuenta        String
+  saldo_pendiente   Float    @default(0)
+  saldo_pagado      Float    @default(0)
+  activo            Boolean  @default(true)
+  creado_en         DateTime @default(now())
+
+  usuario               Usuario              @relation(fields: [usuario_id], references: [id])
+  banco                 Banco                @relation(fields: [banco_id], references: [id])
+  vehiculos             Vehiculo[]
+  contactos_emergencia  ContactoEmergencia[]
+  evaluaciones          EvaluacionPsicologica[]
+  traslados             Traslado[]
+  pagos                 PagoChofer[]
+}
+
+model ContactoEmergencia {
+  @@map("contactos_emergencia")
+  id          Int    @id @default(autoincrement())
+  chofer_id   Int
+  nombre      String
+  telefono    String
+  parentesco  String
+
+  chofer Chofer @relation(fields: [chofer_id], references: [id])
+}
+
+model Vehiculo {
+  @@map("vehiculos")
+  id              Int      @id @default(autoincrement())
+  chofer_id       Int
+  placa           String   @unique
+  marca           String
+  modelo          String
+  anio            Int
+  color           String
+  activo          Boolean  @default(true)
+  creado_en       DateTime @default(now())
+
+  chofer            Chofer              @relation(fields: [chofer_id], references: [id])
+  revisiones        RevisionVehicular[]
+}
+
+model EvaluacionPsicologica {
+  @@map("evaluaciones_psicologicas")
+  id              Int      @id @default(autoincrement())
+  chofer_id       Int
+  nota            Int
+  fecha           DateTime
+  aprobado        Boolean
+  evaluador_id    Int
+  creado_en       DateTime @default(now())
+
+  chofer    Chofer        @relation(fields: [chofer_id], references: [id])
+  evaluador PersonalAdmin @relation(fields: [evaluador_id], references: [id])
+}
+
+model RevisionVehicular {
+  @@map("revisiones_vehiculares")
+  id              Int      @id @default(autoincrement())
+  vehiculo_id     Int
+  calificacion    Int
+  apto            Boolean
+  fecha           DateTime
+  evaluador_id    Int
+  creado_en       DateTime @default(now())
+
+  vehiculo  Vehiculo      @relation(fields: [vehiculo_id], references: [id])
+  evaluador PersonalAdmin @relation(fields: [evaluador_id], references: [id])
+}
+
+model Cliente {
+  @@map("clientes")
+  id          Int      @id @default(autoincrement())
+  usuario_id  Int      @unique
+  saldo       Float    @default(0)
+  creado_en   DateTime @default(now())
+
+  usuario     Usuario       @relation(fields: [usuario_id], references: [id])
+  recargas    RecargaSaldo[]
+  traslados   Traslado[]
+}
+
+model RecargaSaldo {
+  @@map("recargas_saldo")
+  id              Int      @id @default(autoincrement())
+  cliente_id      Int
+  monto           Float
+  banco_id        Int
+  nro_referencia  String
+  fecha           DateTime @default(now())
+
+  cliente Cliente @relation(fields: [cliente_id], references: [id])
+  banco   Banco   @relation(fields: [banco_id], references: [id])
+}
+
+model Traslado {
+  @@map("traslados")
+  id          Int      @id @default(autoincrement())
+  cliente_id  Int
+  chofer_id   Int
+  origen      String
+  destino     String
+  costo       Float
+  estado      String   @default("pendiente")
+  fecha       DateTime @default(now())
+  pagado      Boolean  @default(false)
+  creado_en   DateTime @default(now())
+
+  cliente Cliente @relation(fields: [cliente_id], references: [id])
+  chofer  Chofer  @relation(fields: [chofer_id], references: [id])
+}
+
+model PagoChofer {
+  @@map("pagos_chofer")
+  id              Int      @id @default(autoincrement())
+  chofer_id       Int
+  monto           Float
+  fecha           DateTime @default(now())
+  nro_referencia  String
+  creado_en       DateTime @default(now())
+
+  chofer Chofer @relation(fields: [chofer_id], references: [id])
+}
+
+model Banco {
+  @@map("bancos")
+  id    Int    @id @default(autoincrement())
+  nombre String @unique
+
+  choferes  Chofer[]
+  recargas  RecargaSaldo[]
+}
+
+model PersonalAdmin {
+  @@map("personal_admin")
+  id          Int      @id @default(autoincrement())
+  usuario_id  Int      @unique
+  creado_en   DateTime @default(now())
+
+  usuario               Usuario                @relation(fields: [usuario_id], references: [id])
+  evaluaciones_psico    EvaluacionPsicologica[]
+  revisiones_vehiculares RevisionVehicular[]
+}

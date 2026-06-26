@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: decarrerita
+      POSTGRES_PASSWORD: decarrerita123
+      POSTGRES_DB: decarrerita
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://decarrerita:decarrerita123@db:5432/decarrerita?schema=public
+      JWT_SECRET: decarrerita-jwt-secret-change-in-production
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+
+volumes:
+  pgdata:
