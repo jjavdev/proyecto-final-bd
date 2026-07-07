@@ -1,3 +1,6 @@
+// Punto de entrada del frontend de Decarrerita.
+// Renderiza la aplicacion React con enrutador y modo estricto.
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'

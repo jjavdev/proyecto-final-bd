@@ -1,3 +1,6 @@
+// Rutas del cliente: recarga de saldo, consulta de saldo, historial de recargas y viajes.
+// Todas requieren autenticacion y rol CLIENTE.
+
 import { Router } from 'express'
 import { z } from 'zod'
 import { recargarSaldo, historialRecargas, consultarSaldo, historialViajes } from '../controllers/cliente.controller'

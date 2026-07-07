@@ -1,3 +1,5 @@
+// Ruta publica del catalogo de bancos. No requiere autenticacion.
+
 import { Router } from 'express'
 import { listar } from '../controllers/bancos.controller'
 

@@ -17,7 +17,7 @@ services:
     depends_on:
       - db
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       DATABASE_URL: postgresql://decarrerita:decarrerita123@db:5432/decarrerita?schema=public
       JWT_SECRET: decarrerita-jwt-secret-change-in-production
@@ -31,7 +31,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "5173:5173"
+      - "5174:5173"
     volumes:
       - ./frontend/src:/app/src
 

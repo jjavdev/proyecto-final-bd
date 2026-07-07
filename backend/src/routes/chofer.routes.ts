@@ -1,6 +1,8 @@
+// Rutas del chofer: gestion de vehiculos, contactos de emergencia, viajes, datos bancarios y estadisticas.
+
 import { Router } from 'express'
 import { z } from 'zod'
-import { registrarVehiculo, misVehiculos, contactosEmergencia, misViajes, actualizarBanco } from '../controllers/chofer.controller'
+import { registrarVehiculo, misVehiculos, contactosEmergencia, misViajes, actualizarBanco, stats, listarChoferes, evaluacionesChofer } from '../controllers/chofer.controller'
 import { authenticate, authorize } from '../middlewares/auth'
 import { validate } from '../middlewares/validate'
 
@@ -32,5 +34,8 @@ router.post('/vehiculos', authenticate, authorize('CHOFER'), validate(vehiculoSc
 router.post('/contactos', authenticate, authorize('CHOFER'), validate(contactoSchema), contactosEmergencia)
 router.get('/viajes', authenticate, authorize('CHOFER'), misViajes)
 router.put('/banco', authenticate, authorize('CHOFER'), validate(bancoSchema), actualizarBanco)
+router.get('/stats', authenticate, authorize('CHOFER'), stats)
+router.get('/listar', authenticate, authorize('PERSONAL_ADMIN', 'ADMIN'), listarChoferes)
+router.get('/:id/evaluaciones', authenticate, authorize('PERSONAL_ADMIN', 'CHOFER'), evaluacionesChofer)
 
 export default router

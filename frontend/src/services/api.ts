@@ -1,3 +1,8 @@
+// Cliente HTTP centralizado para las peticiones al backend.
+// Usa Axios con baseURL /api (el proxy de Vite redirige al backend).
+// Interceptor de request: agrega el token JWT del localStorage.
+// Interceptor de response: en 401 redirige al login.
+
 import axios from 'axios'
 
 const api = axios.create({

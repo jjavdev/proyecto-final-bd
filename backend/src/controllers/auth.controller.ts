@@ -1,9 +1,13 @@
+// Controlador de autenticacion: registro, inicio de sesion y perfil.
+
 import { Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '../index'
 import { AuthRequest } from '../middlewares/auth'
 
+// POST /api/auth/registro — Crea usuario + registro especifico segun el rol.
+// CHOFER nace con activo=false hasta que pase la evaluacion psicologica.
 export async function registro(req: AuthRequest, res: Response) {
   const { email, password, nombre, apellido, cedula, telefono, rol } = req.body
 
@@ -18,7 +22,7 @@ export async function registro(req: AuthRequest, res: Response) {
 
   if (rol === 'CHOFER') {
     await prisma.chofer.create({
-      data: { usuario_id: usuario.id, banco_id: 1, nro_cuenta: '' }
+      data: { usuario_id: usuario.id, banco_id: 1, nro_cuenta: '', activo: false }
     })
   } else if (rol === 'CLIENTE') {
     await prisma.cliente.create({ data: { usuario_id: usuario.id } })
@@ -31,6 +35,7 @@ export async function registro(req: AuthRequest, res: Response) {
   res.status(201).json({ token, usuario: { id: usuario.id, email: usuario.email, nombre: usuario.nombre, rol: usuario.rol } })
 }
 
+// POST /api/auth/login — Valida credenciales y devuelve JWT.
 export async function login(req: AuthRequest, res: Response) {
   const { email, password } = req.body
 
@@ -45,6 +50,7 @@ export async function login(req: AuthRequest, res: Response) {
   res.json({ token, usuario: { id: usuario.id, email: usuario.email, nombre: usuario.nombre, rol: usuario.rol } })
 }
 
+// GET /api/auth/perfil — Devuelve los datos del usuario autenticado.
 export async function perfil(req: AuthRequest, res: Response) {
   const usuario = await prisma.usuario.findUnique({
     where: { id: req.usuario!.id },

@@ -1,3 +1,7 @@
+// Contexto de autenticacion global.
+// Provee el usuario actual, estado de carga y funciones login/register/logout.
+// Al montarse, intenta recuperar la sesion desde el token guardado en localStorage.
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import api from '../services/api'
 

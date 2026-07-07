@@ -1,29 +1,44 @@
+// Layout principal con sidebar de navegacion.
+// Muestra el menu segun el rol del usuario.
+// Para CLIENTE muestra saldo disponible. Para CHOFER muestra saldos pendiente/pagado.
+
 import { ReactNode, useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../services/api'
 
+// Menu de navegacion compartido (Inicio + Perfil) y especifico por rol
+const shared = [
+  { label: 'Inicio', path: '/dashboard' },
+  { label: 'Mi Perfil', path: '/dashboard/perfil' },
+]
+
 const menuItems: Record<string, { label: string; path: string }[]> = {
   ADMIN: [
-    { label: 'Inicio', path: '/dashboard' },
+    ...shared,
+    { label: 'Listado Traslados', path: '/dashboard/traslados' },
     { label: 'Reportes', path: '/dashboard/reportes' },
   ],
   PERSONAL_ADMIN: [
-    { label: 'Inicio', path: '/dashboard' },
+    ...shared,
     { label: 'Evaluar Chofer', path: '/dashboard/evaluar-chofer' },
     { label: 'Revisar Vehículo', path: '/dashboard/revisar-vehiculo' },
     { label: 'Pagar Chofer', path: '/dashboard/pagar-chofer' },
     { label: 'Ganancias', path: '/dashboard/ganancias' },
+    { label: 'Listado Traslados', path: '/dashboard/traslados' },
+    { label: 'Banco Chofer', path: '/dashboard/banco-chofer' },
+    { label: 'Evaluaciones', path: '/dashboard/evaluaciones-chofer' },
+    { label: 'Revisiones', path: '/dashboard/revisiones-vehiculo' },
   ],
   CHOFER: [
-    { label: 'Inicio', path: '/dashboard' },
+    ...shared,
     { label: 'Mis Vehículos', path: '/dashboard/vehiculos' },
     { label: 'Contactos Emergencia', path: '/dashboard/contactos' },
     { label: 'Datos Bancarios', path: '/dashboard/banco' },
     { label: 'Mis Viajes', path: '/dashboard/viajes' },
   ],
   CLIENTE: [
-    { label: 'Inicio', path: '/dashboard' },
+    ...shared,
     { label: 'Recargar Saldo', path: '/dashboard/recargar' },
     { label: 'Solicitar Viaje', path: '/dashboard/solicitar-viaje' },
     { label: 'Historial Viajes', path: '/dashboard/historial-viajes' },

@@ -1,7 +1,11 @@
+// Controlador de funcionalidades del cliente: recarga de saldo, consultas e historial.
+
 import { Response } from 'express'
 import { prisma } from '../index'
 import { AuthRequest } from '../middlewares/auth'
 
+// POST /api/clientes/recargar — Recarga saldo del cliente.
+// Crea registro en recargas_saldo e incrementa el saldo del cliente.
 export async function recargarSaldo(req: AuthRequest, res: Response) {
   const { monto, banco_id, nro_referencia } = req.body
   const usuario_id = req.usuario!.id
@@ -21,12 +25,13 @@ export async function recargarSaldo(req: AuthRequest, res: Response) {
   res.status(201).json(recarga)
 }
 
+// GET /api/clientes/recargas — Historial de recargas del cliente.
+// Incluye el nombre del banco mediante JOIN.
 export async function historialRecargas(req: AuthRequest, res: Response) {
   const usuario_id = req.usuario!.id
   const cliente = await prisma.cliente.findUnique({ where: { usuario_id } })
   if (!cliente) return res.status(404).json({ error: 'Cliente no encontrado' })
 
-  // SQL crudo para reporte de recargas
   const recargas = await prisma.$queryRaw`
     SELECT r.id, r.monto, r.nro_referencia, r.fecha, b.nombre AS banco
     FROM recargas_saldo r
@@ -38,6 +43,7 @@ export async function historialRecargas(req: AuthRequest, res: Response) {
   res.json(recargas)
 }
 
+// GET /api/clientes/saldo — Devuelve el saldo disponible del cliente.
 export async function consultarSaldo(req: AuthRequest, res: Response) {
   const usuario_id = req.usuario!.id
   const cliente = await prisma.cliente.findUnique({
@@ -49,6 +55,8 @@ export async function consultarSaldo(req: AuthRequest, res: Response) {
   res.json({ saldo: cliente.saldo })
 }
 
+// GET /api/clientes/viajes — Historial de viajes del cliente.
+// Muestra datos del chofer y del vehiculo asignado.
 export async function historialViajes(req: AuthRequest, res: Response) {
   const usuario_id = req.usuario!.id
   const cliente = await prisma.cliente.findUnique({ where: { usuario_id } })
@@ -60,7 +68,10 @@ export async function historialViajes(req: AuthRequest, res: Response) {
     FROM traslados t
     JOIN choferes c ON t.chofer_id = c.id
     JOIN usuarios u ON c.usuario_id = u.id
-    JOIN vehiculos v ON v.chofer_id = c.id AND v.activo = true
+    LEFT JOIN LATERAL (
+      SELECT v2.placa, v2.marca, v2.modelo FROM vehiculos v2
+      WHERE v2.chofer_id = c.id AND v2.activo = true LIMIT 1
+    ) v ON true
     WHERE t.cliente_id = ${cliente.id}
     ORDER BY t.fecha DESC
   `

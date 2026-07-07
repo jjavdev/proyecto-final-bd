@@ -1,3 +1,5 @@
+// Pagina de inicio del dashboard. Muestra bienvenida y datos basicos del usuario.
+
 import { useAuth } from '../context/AuthContext'
 
 export default function Home() {

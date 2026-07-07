@@ -1,5 +1,15 @@
+// Esquema de base de datos de Decarrerita.
+// Define 12 tablas para la gestion de usuarios, choferes, clientes, vehiculos, traslados y pagos.
+// Usa PostgreSQL con el cliente Prisma ORM.
+
 generator client {
   provider = "prisma-client-js"
+}
+
+// Genera el diagrama E-R en docs/ERD.md automaticamente
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../docs/ERD.md"
 }
 
 datasource db {
@@ -7,6 +17,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Roles de usuario del sistema
 enum Rol {
   ADMIN
   CHOFER
@@ -14,6 +25,8 @@ enum Rol {
   PERSONAL_ADMIN
 }
 
+// Tabla base de usuarios. Cada usuario tiene un rol y datos personales basicos.
+// Se relaciona 1:1 con choferes, clientes o personal_admin segun el rol.
 model Usuario {
   @@map("usuarios")
   id             Int       @id @default(autoincrement())
@@ -33,6 +46,10 @@ model Usuario {
   personal_admin  PersonalAdmin?
 }
 
+// Datos especificos del chofer: banco, cuentas y saldos.
+// activo=false hasta que apruebe la evaluacion psicologica (nota >= 73).
+// saldo_pendiente: monto acumulado por viajes realizados no pagados.
+// saldo_pagado: monto ya cancelado por el personal administrativo.
 model Chofer {
   @@map("choferes")
   id                Int      @id @default(autoincrement())
@@ -53,6 +70,7 @@ model Chofer {
   pagos                 PagoChofer[]
 }
 
+// Contactos de emergencia del chofer (minimo 2 requeridos).
 model ContactoEmergencia {
   @@map("contactos_emergencia")
   id          Int    @id @default(autoincrement())
@@ -64,6 +82,8 @@ model ContactoEmergencia {
   chofer Chofer @relation(fields: [chofer_id], references: [id])
 }
 
+// Vehiculo registrado por un chofer.
+// activo=false hasta que pase la revision tecnica (calificacion >= 65).
 model Vehiculo {
   @@map("vehiculos")
   id              Int      @id @default(autoincrement())
@@ -80,6 +100,8 @@ model Vehiculo {
   revisiones        RevisionVehicular[]
 }
 
+// Evaluacion psicologica del chofer. Realizada por personal administrativo.
+// La nota minima aprobatoria es 73. Si aprueba, el chofer se activa.
 model EvaluacionPsicologica {
   @@map("evaluaciones_psicologicas")
   id              Int      @id @default(autoincrement())
@@ -94,6 +116,8 @@ model EvaluacionPsicologica {
   evaluador PersonalAdmin @relation(fields: [evaluador_id], references: [id])
 }
 
+// Revision tecnica del vehiculo. Realizada por personal administrativo.
+// Calificacion minima para apto es 65. Si es apto, el vehiculo se activa.
 model RevisionVehicular {
   @@map("revisiones_vehiculares")
   id              Int      @id @default(autoincrement())
@@ -108,6 +132,7 @@ model RevisionVehicular {
   evaluador PersonalAdmin @relation(fields: [evaluador_id], references: [id])
 }
 
+// Cliente del sistema. Almacena el saldo disponible para pagar traslados.
 model Cliente {
   @@map("clientes")
   id          Int      @id @default(autoincrement())
@@ -120,6 +145,8 @@ model Cliente {
   traslados   Traslado[]
 }
 
+// Recarga de saldo realizada por un cliente.
+// Registra banco, monto y numero de referencia de la transferencia.
 model RecargaSaldo {
   @@map("recargas_saldo")
   id              Int      @id @default(autoincrement())
@@ -133,6 +160,10 @@ model RecargaSaldo {
   banco   Banco   @relation(fields: [banco_id], references: [id])
 }
 
+// Traslado solicitado por un cliente y asignado a un chofer.
+// estado: pendiente | completado | cancelado
+// El costo total se divide: 30% empresa, 70% chofer.
+// pagado indica si el chofer ya recibio el pago de este traslado.
 model Traslado {
   @@map("traslados")
   id          Int      @id @default(autoincrement())
@@ -150,6 +181,8 @@ model Traslado {
   chofer  Chofer  @relation(fields: [chofer_id], references: [id])
 }
 
+// Pago realizado por personal administrativo a un chofer.
+// Reduce saldo_pendiente y aumenta saldo_pagado del chofer.
 model PagoChofer {
   @@map("pagos_chofer")
   id              Int      @id @default(autoincrement())
@@ -162,6 +195,7 @@ model PagoChofer {
   chofer Chofer @relation(fields: [chofer_id], references: [id])
 }
 
+// Catalogo de entidades bancarias.
 model Banco {
   @@map("bancos")
   id    Int    @id @default(autoincrement())
@@ -171,6 +205,7 @@ model Banco {
   recargas  RecargaSaldo[]
 }
 
+// Personal administrativo que gestiona evaluaciones, revisiones y pagos.
 model PersonalAdmin {
   @@map("personal_admin")
   id          Int      @id @default(autoincrement())

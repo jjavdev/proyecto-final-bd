@@ -1,3 +1,7 @@
+// Punto de entrada del backend de Decarrerita.
+// Configura Express, middlewares globales y registra todas las rutas del API.
+// Exporta la instancia de PrismaClient para que los controladores la usen.
+
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -23,6 +27,7 @@ import adminRoutes from './routes/admin.routes'
 import trasladoRoutes from './routes/traslado.routes'
 import reporteRoutes from './routes/reporte.routes'
 import bancosRoutes from './routes/bancos.routes'
+import vehiculoRoutes from './routes/vehiculo.routes'
 
 app.use('/api/auth', authRoutes)
 app.use('/api/clientes', clienteRoutes)
@@ -31,6 +36,7 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/traslados', trasladoRoutes)
 app.use('/api/reportes', reporteRoutes)
 app.use('/api/bancos', bancosRoutes)
+app.use('/api/vehiculos', vehiculoRoutes)
 
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err)

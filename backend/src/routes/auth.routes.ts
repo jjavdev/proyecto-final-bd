@@ -1,3 +1,7 @@
+// Rutas de autenticacion: registro, login y perfil del usuario.
+// El registro crea el usuario y su registro especifico segun el rol.
+// Login y perfil son accesibles por cualquier usuario autenticado.
+
 import { Router } from 'express'
 import { z } from 'zod'
 import { registro, login, perfil } from '../controllers/auth.controller'

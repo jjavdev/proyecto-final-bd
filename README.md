@@ -78,6 +78,48 @@ El cliente `cliente1` tiene un saldo inicial de **$100.00**.
 
 ---
 
+## Funcionalidades Implementadas
+
+### Módulos del Sistema
+
+| # | Funcionalidad | Rol | Estado |
+|---|--------------|-----|--------|
+| 1 | Registro e inicio de sesión | Todos | ✅ |
+| 2 | Ver Datos Personales (Perfil) | Todos | ✅ |
+| 3 | Recargar saldo | Cliente | ✅ |
+| 4 | Solicitar traslado (con datos de chofer y vehículo en respuesta) | Cliente | ✅ |
+| 5 | Historial de viajes | Cliente | ✅ |
+| 6 | Historial de recargas | Cliente | ✅ |
+| 7 | Registrar vehículo | Chofer | ✅ |
+| 8 | Registrar contactos de emergencia | Chofer | ✅ |
+| 9 | Ver viajes asignados (con filtros por fecha y estado) | Chofer | ✅ |
+| 10 | Marcar traslado como completado/cancelado | Chofer, Admin | ✅ |
+| 11 | Actualizar datos bancarios | Chofer | ✅ |
+| 12 | Evaluación psicológica (nota ≥ 73 activa al chofer) | Personal Admin | ✅ |
+| 13 | Revisión vehicular (calificación ≥ 65 activa el vehículo) | Personal Admin | ✅ |
+| 14 | Pagar a chofer | Personal Admin | ✅ |
+| 15 | Asignar banco a chofer | Personal Admin | ✅ |
+| 16 | Listar choferes (con evaluaciones) | Personal Admin | ✅ |
+| 17 | Listar vehículos (con revisiones) | Personal Admin | ✅ |
+| 18 | Historial de evaluaciones de un chofer | Personal Admin | ✅ |
+| 19 | Historial de revisiones de un vehículo | Personal Admin | ✅ |
+| 20 | Reporte de ganancias por período | Admin, Personal Admin | ✅ |
+| 21 | Reporte de pagos a chofer por período | Admin, Personal Admin | ✅ |
+| 22 | Listado de traslados (admin) | Admin, Personal Admin | ✅ |
+| 23 | Gestión de bancos | Personal Admin | ✅ |
+
+### Detalles de Implementación
+
+- **Solicitar traslado**: Al crear un traslado, la respuesta incluye `chofer: { id, nombre, apellido }` y `vehiculo: { placa, marca, modelo }`. La asignación es aleatoria entre choferes activos con vehículo activo.
+- **Filtros de viajes (chofer)**: El endpoint `GET /api/choferes/viajes` acepta `?inicio=&fin=&estado=` para filtrar por rango de fechas y estado del traslado.
+- **Marcar completado/cancelado**: Endpoints `PUT /api/traslados/:id/completar` y `PUT /api/traslados/:id/cancelar`. Solo el chofer asignado o admin pueden ejecutar la acción.
+- **Activación por evaluación**: El chofer se crea con `activo: false` y se activa automáticamente al aprobar una evaluación psicológica con nota ≥ 73.
+- **Activación por revisión**: El vehículo se crea con `activo: false` y se activa automáticamente al aprobar una revisión vehicular con calificación ≥ 65.
+- **Cálculo de tarifa**: $3.00 base + $1.50 por kilómetro recorrido.
+- **Distribución de ingresos**: 70% para el chofer (saldo pendiente), 30% ganancia de la empresa.
+
+---
+
 ## Estructura del Proyecto
 
 ```
@@ -86,13 +128,18 @@ Proyecto DB/
 │   ├── prisma/
 │   │   ├── schema.prisma       # Modelo relacional (12 tablas)
 │   │   └── seed.ts             # Datos de prueba
+│   ├── scripts/
+│   │   └── diccionario-datos.ts # Genera documentación desde information_schema
 │   └── src/
 │       ├── controllers/        # Lógica de negocio (MVC)
-│       │   ├── admin.controller.ts
-│       │   ├── auth.controller.ts
-│       │   ├── chofer.controller.ts
-│       │   ├── cliente.controller.ts
-│       │   └── traslado.controller.ts
+│       │   ├── admin.controller.ts   # Evaluación, revisión, pagos, bancos
+│       │   ├── auth.controller.ts    # Registro, login, perfil
+│       │   ├── bancos.controller.ts  # CRUD de bancos
+│       │   ├── chofer.controller.ts  # Vehículos, contactos, viajes, banco
+│       │   ├── cliente.controller.ts # Recargas, saldo, viajes
+│       │   ├── reporte.controller.ts # Ganancias, pagos a chofer
+│       │   ├── traslado.controller.ts# Solicitar, completar, cancelar, listar
+│       │   └── vehiculo.controller.ts# Listar, historial revisiones
 │       ├── middlewares/
 │       │   ├── auth.ts          # JWT + roles
 │       │   └── validate.ts      # Validación Zod
@@ -102,11 +149,29 @@ Proyecto DB/
 │       └── index.ts             # Entry point
 ├── frontend/
 │   └── src/
-│       ├── context/AuthContext.tsx
-│       ├── pages/               # Login, Register, Dashboard
-│       └── services/api.ts      # Axios + JWT interceptor
+│       ├── components/
+│       │   └── Layout.tsx       # Sidebar con menú dinámico por rol y saldos
+│       ├── context/
+│       │   └── AuthContext.tsx  # Estado global de autenticación
+│       ├── pages/
+│       │   ├── Login.tsx, Register.tsx
+│       │   ├── Perfil.tsx       # Ver datos personales (todos los roles)
+│       │   ├── Dashboard.tsx    # Routing interno por rol
+│       │   ├── admin/           # EvaluarChofer, RevisarVehiculo, PagarChofer,
+│       │   │                     # Ganancias, Reportes, BancoChofer,
+│       │   │                     # EvaluacionesChofer, RevisionesVehiculo,
+│       │   │                     # ListadoTraslados
+│       │   ├── chofer/          # Vehiculos, Contactos, DatosBancarios,
+│       │   │                     # ViajesAsignados
+│       │   └── cliente/         # RecargarSaldo, SolicitarViaje,
+│       │                         # HistorialViajes, HistorialRecargas
+│       └── services/
+│           └── api.ts           # Axios + JWT interceptor
 ├── docs/
-│   └── sql-en-prisma.md         # Guía de SQL crudo con Prisma
+│   ├── sql-en-prisma.md         # Guía de SQL crudo con Prisma
+│   ├── ERD.md                   # Diagrama Entidad-Relación (generado)
+│   └── diccionario-datos.md     # Diccionario de datos (generado)
+├── generar-docs.sh              # Script para generar documentación
 ├── docker-compose.yml
 └── README.md
 ```
@@ -129,10 +194,6 @@ Proyecto DB/
 | `PagoChofer` | Pagos realizados al chofer (70% del traslado) |
 | `Banco` | Catálogo de bancos |
 | `PersonalAdmin` | Personal administrativo (evaluador) |
-
-**Distribución de ingresos por traslado:**
-- **70%** para el chofer (`saldo_pendiente`)
-- **30%** ganancia de la empresa
 
 ---
 
@@ -158,13 +219,21 @@ Proyecto DB/
 |--------|------|------|-------------|
 | `POST` | `/api/choferes/vehiculos` | CHOFER | Registrar vehículo |
 | `POST` | `/api/choferes/contactos` | CHOFER | Registrar contactos de emergencia |
-| `GET` | `/api/choferes/viajes` | CHOFER | Ver viajes asignados |
+| `GET` | `/api/choferes/viajes` | CHOFER | Ver viajes asignados (filtros: `?inicio=&fin=&estado=`) |
 | `PUT` | `/api/choferes/banco` | CHOFER | Actualizar datos bancarios |
 
 ### Traslados
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| `POST` | `/api/traslados` | CLIENTE | Solicitar traslado (asignación aleatoria) |
+| `POST` | `/api/traslados` | CLIENTE | Solicitar traslado (asignación aleatoria + datos chofer/vehículo) |
+| `PUT` | `/api/traslados/:id/completar` | CHOFER / ADMIN | Marcar traslado como completado |
+| `PUT` | `/api/traslados/:id/cancelar` | CHOFER / ADMIN | Cancelar traslado |
+
+### Vehículos
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `GET` | `/api/vehiculos` | PERSONAL_ADMIN | Listar vehículos |
+| `GET` | `/api/vehiculos/:id/revisiones` | PERSONAL_ADMIN | Historial de revisiones de un vehículo |
 
 ### Personal Administrativo
 | Método | Ruta | Auth | Descripción |
@@ -173,6 +242,10 @@ Proyecto DB/
 | `POST` | `/api/admin/revisar-vehiculo` | PERSONAL_ADMIN | Revisión vehicular |
 | `POST` | `/api/admin/pagar-chofer` | PERSONAL_ADMIN | Pagar a chofer |
 | `POST` | `/api/admin/bancos` | PERSONAL_ADMIN | Crear banco |
+| `GET` | `/api/admin/choferes` | PERSONAL_ADMIN | Listar choferes |
+| `GET` | `/api/admin/choferes/:id/evaluaciones` | PERSONAL_ADMIN | Historial evaluaciones de un chofer |
+| `PUT` | `/api/admin/choferes/:id/banco` | PERSONAL_ADMIN | Asignar banco a un chofer |
+| `GET` | `/api/admin/traslados` | PERSONAL_ADMIN / ADMIN | Listar todos los traslados |
 
 ### Reportes
 | Método | Ruta | Auth | Descripción |
@@ -238,6 +311,28 @@ const ganancias = await prisma.$queryRaw`
 | `DATABASE_URL` | URL de conexión a PostgreSQL | `postgresql://decarrerita:decarrerita123@db:5432/decarrerita` |
 | `JWT_SECRET` | Secreto para firmar tokens JWT | — |
 | `PORT` | Puerto del backend | `3000` |
+
+---
+
+## Documentación del Proyecto
+
+El proyecto incluye herramientas para generar automáticamente los artefactos del informe:
+
+### Diagrama Entidad-Relación (ERD)
+```bash
+./generar-docs.sh
+# o paso a paso:
+cd backend && npx prisma generate
+```
+Genera `docs/ERD.md` con el diagrama en formato Mermaid.
+
+### Diccionario de Datos
+```bash
+cd backend && npm run docs:diccionario
+# o:
+./generar-docs.sh
+```
+Genera `docs/diccionario-datos.md` con la descripción de cada tabla, campos, tipos, PK y FK.
 
 ---
 

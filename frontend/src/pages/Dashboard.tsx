@@ -1,4 +1,7 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+// Dashboard principal con routing interno segun el rol del usuario.
+// Cada rol ve solo las rutas que le corresponden.
+
+import { Routes, Route } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Layout from '../components/Layout'
 import Home from './Home'
@@ -18,6 +21,11 @@ import RevisarVehiculo from './admin/RevisarVehiculo'
 import PagarChofer from './admin/PagarChofer'
 import Ganancias from './admin/Ganancias'
 import Reportes from './admin/Reportes'
+import ListadoTraslados from './admin/ListadoTraslados'
+import BancoChofer from './admin/BancoChofer'
+import EvaluacionesChofer from './admin/EvaluacionesChofer'
+import RevisionesVehiculo from './admin/RevisionesVehiculo'
+import Perfil from './Perfil'
 
 export default function Dashboard() {
   const { usuario } = useAuth()
@@ -26,8 +34,8 @@ export default function Dashboard() {
     <Layout>
       <Routes>
         <Route index element={<Home />} />
+        <Route path="perfil" element={<Perfil />} />
 
-        {/* CLIENTE */}
         {usuario?.rol === 'CLIENTE' && (
           <>
             <Route path="recargar" element={<RecargarSaldo />} />
@@ -37,7 +45,6 @@ export default function Dashboard() {
           </>
         )}
 
-        {/* CHOFER */}
         {usuario?.rol === 'CHOFER' && (
           <>
             <Route path="vehiculos" element={<Vehiculos />} />
@@ -47,20 +54,23 @@ export default function Dashboard() {
           </>
         )}
 
-        {/* PERSONAL_ADMIN */}
         {usuario?.rol === 'PERSONAL_ADMIN' && (
           <>
             <Route path="evaluar-chofer" element={<EvaluarChofer />} />
             <Route path="revisar-vehiculo" element={<RevisarVehiculo />} />
             <Route path="pagar-chofer" element={<PagarChofer />} />
             <Route path="ganancias" element={<Ganancias />} />
+            <Route path="traslados" element={<ListadoTraslados />} />
+            <Route path="banco-chofer" element={<BancoChofer />} />
+            <Route path="evaluaciones-chofer" element={<EvaluacionesChofer />} />
+            <Route path="revisiones-vehiculo" element={<RevisionesVehiculo />} />
           </>
         )}
 
-        {/* ADMIN */}
         {usuario?.rol === 'ADMIN' && (
           <>
             <Route path="reportes" element={<Reportes />} />
+            <Route path="traslados" element={<ListadoTraslados />} />
           </>
         )}
 

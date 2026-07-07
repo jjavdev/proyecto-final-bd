@@ -1,3 +1,7 @@
+// Middleware de autenticacion y autorizacion.
+// authenticate: verifica el token JWT del usuario.
+// authorize: restringe el acceso segun el rol del usuario.
+
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 

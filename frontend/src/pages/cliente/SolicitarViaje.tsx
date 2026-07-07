@@ -33,8 +33,9 @@ export default function SolicitarViaje() {
       </form>
       {viaje && (
         <div style={{ marginTop: 20, padding: 15, background: '#e8f5e9', borderRadius: 6 }}>
-          <p><strong>Chofer asignado:</strong> ID {viaje.chofer_id}</p>
           <p><strong>Costo:</strong> ${viaje.costo}</p>
+          <p><strong>Chofer:</strong> {viaje.chofer.nombre} {viaje.chofer.apellido}</p>
+          <p><strong>Vehículo:</strong> {viaje.vehiculo.marca} {viaje.vehiculo.modelo} — {viaje.vehiculo.placa}</p>
         </div>
       )}
     </Card>

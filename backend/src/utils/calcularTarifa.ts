@@ -1,5 +1,6 @@
-// Algoritmo de cálculo de tarifa (discrecional del equipo)
-// Ejemplo: tarifa fija por zona + distancia
+// Algoritmo de calculo de tarifa para los traslados.
+// Tarifa base ($3.00) + costo por kilometro recorrido ($1.50/km).
+// El resultado se redondea a 2 decimales.
 
 const TARIFA_BASE = 3.0
 const COSTO_POR_KM = 1.5

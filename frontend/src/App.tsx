@@ -1,3 +1,7 @@
+// Componente raiz de la aplicacion.
+// Define las rutas publicas (login, register) y protegidas (dashboard).
+// PrivateRoute verifica autenticacion y redirige al login si es necesario.
+
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/Login'

@@ -1,3 +1,7 @@
+// Middleware de validacion de datos con Zod.
+// Valida el body de las peticiones contra un esquema definido.
+// Si falla, devuelve 400 con los errores de campo.
+
 import { Request, Response, NextFunction } from 'express'
 import { ZodSchema } from 'zod'
 

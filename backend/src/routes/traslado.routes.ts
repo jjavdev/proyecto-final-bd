@@ -1,6 +1,9 @@
+// Rutas de traslados: solicitud (cliente), completado y cancelacion (chofer/admin).
+// La solicitud asigna un chofer aleatorio y calcula el costo automaticamente.
+
 import { Router } from 'express'
 import { z } from 'zod'
-import { solicitarTraslado } from '../controllers/traslado.controller'
+import { solicitarTraslado, completarTraslado, cancelarTraslado } from '../controllers/traslado.controller'
 import { authenticate, authorize } from '../middlewares/auth'
 import { validate } from '../middlewares/validate'
 
@@ -13,5 +16,7 @@ const trasladoSchema = z.object({
 })
 
 router.post('/', authenticate, authorize('CLIENTE'), validate(trasladoSchema), solicitarTraslado)
+router.put('/:id/completar', authenticate, authorize('CHOFER', 'PERSONAL_ADMIN'), completarTraslado)
+router.put('/:id/cancelar', authenticate, authorize('CHOFER', 'PERSONAL_ADMIN'), cancelarTraslado)
 
 export default router

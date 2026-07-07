@@ -1,3 +1,6 @@
+// Seed de la base de datos: crea usuarios de prueba y datos iniciales.
+// Todos los usuarios tienen contrasena "123456".
+
 import { PrismaClient, Rol } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
@@ -6,6 +9,7 @@ const prisma = new PrismaClient()
 async function main() {
   const password_hash = await bcrypt.hash('123456', 10)
 
+  // Usuario administrador del sistema
   const admin = await prisma.usuario.upsert({
     where: { email: 'admin@decarrerita.com' },
     update: {},
@@ -20,6 +24,7 @@ async function main() {
     }
   })
 
+  // Personal administrativo (evaluador, pagador)
   const personal = await prisma.usuario.upsert({
     where: { email: 'personal@decarrerita.com' },
     update: {},
@@ -40,6 +45,7 @@ async function main() {
     create: { usuario_id: personal.id }
   })
 
+  // Bancos del catalogo
   const banco = await prisma.banco.upsert({
     where: { nombre: 'Banco de Venezuela' },
     update: {},
@@ -58,6 +64,7 @@ async function main() {
     create: { nombre: 'Provincial' }
   })
 
+  // Chofer de prueba
   const choferU = await prisma.usuario.upsert({
     where: { email: 'chofer1@decarrerita.com' },
     update: {},
@@ -82,6 +89,7 @@ async function main() {
     }
   })
 
+  // Cliente de prueba con saldo inicial de $100
   const clienteU = await prisma.usuario.upsert({
     where: { email: 'cliente1@decarrerita.com' },
     update: {},
