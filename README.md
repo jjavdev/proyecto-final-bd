@@ -328,6 +328,9 @@ El proyecto incluye los siguientes documentos del informe:
 | Diccionario de datos | [`docs/diccionario-datos.md`](docs/diccionario-datos.md) | Tablas, campos, tipos, PK y FK (generado automáticamente) |
 | Pantallas de formularios | [`docs/pantallas-formularios.md`](docs/pantallas-formularios.md) | Descripción de cada formulario del sistema |
 | Pantallas de consultas | [`docs/pantallas-consultas.md`](docs/pantallas-consultas.md) | Salidas de consultas con scripts SQL |
+| Manual del desarrollador | [`docs/manual-desarrollador.md`](docs/manual-desarrollador.md) | Guía completa para defender el proyecto |
+
+Adicionalmente, el [`docs/manual-desarrollador.md`](docs/manual-desarrollador.md) contiene explicaciones detalladas de cada consulta SQL, el flujo de autenticación, la lógica de negocio, y respuestas preparadas para preguntas comunes en la defensa.
 
 ### Generación Automática
 
