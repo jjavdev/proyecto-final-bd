@@ -85,16 +85,30 @@ export async function misViajes(req: AuthRequest, res: Response) {
   res.json(viajes)
 }
 
-// GET /api/choferes/vehiculos — Lista los vehiculos registrados por el chofer.
+// GET /api/choferes/vehiculos — Lista los vehiculos registrados por el chofer con estado de revision.
 export async function misVehiculos(req: AuthRequest, res: Response) {
   const usuario_id = req.usuario!.id
   const chofer = await prisma.chofer.findUnique({ where: { usuario_id } })
   if (!chofer) return res.status(404).json({ error: 'Chofer no encontrado' })
 
-  const vehiculos = await prisma.vehiculo.findMany({
-    where: { chofer_id: chofer.id },
-    orderBy: { creado_en: 'desc' }
-  })
+  const vehiculos = await prisma.$queryRaw`
+    SELECT v.id, v.placa, v.marca, v.modelo, v.anio, v.color, v.activo,
+           (SELECT rv.apto FROM revisiones_vehiculares rv
+            WHERE rv.vehiculo_id = v.id ORDER BY rv.fecha DESC LIMIT 1
+           ) AS ultima_revision_apta,
+           (SELECT rv.fecha FROM revisiones_vehiculares rv
+            WHERE rv.vehiculo_id = v.id ORDER BY rv.fecha DESC LIMIT 1
+           ) AS ultima_revision_fecha,
+           (SELECT rv.fecha FROM revisiones_vehiculares rv
+            WHERE rv.vehiculo_id = v.id
+              AND rv.apto = true
+              AND rv.fecha >= NOW() - INTERVAL '1 year'
+            ORDER BY rv.fecha DESC LIMIT 1
+           ) IS NOT NULL AS revision_vigente
+    FROM vehiculos v
+    WHERE v.chofer_id = ${chofer.id}
+    ORDER BY v.creado_en DESC
+  `
 
   res.json(vehiculos)
 }
@@ -127,12 +141,24 @@ export async function evaluacionesChofer(req: AuthRequest, res: Response) {
   res.json(evaluaciones)
 }
 
-// GET /api/choferes/listar — Lista todos los choferes con datos personales y financieros.
-// Solo accesible por PERSONAL_ADMIN y ADMIN.
+// GET /api/choferes/listar — Lista todos los choferes con datos personales, financieros y evaluacion.
+// Incluye estado de evaluacion vigente (< 1 año).
 export async function listarChoferes(_req: AuthRequest, res: Response) {
   const choferes = await prisma.$queryRaw`
     SELECT c.id, u.nombre, u.apellido, u.cedula, u.email, c.activo,
-           b.nombre AS banco, c.nro_cuenta, c.saldo_pendiente, c.saldo_pagado
+           b.nombre AS banco, c.nro_cuenta, c.saldo_pendiente, c.saldo_pagado,
+           (SELECT e.nota FROM evaluaciones_psicologicas e
+            WHERE e.chofer_id = c.id ORDER BY e.fecha DESC LIMIT 1
+           ) AS ultima_evaluacion_nota,
+           (SELECT e.fecha FROM evaluaciones_psicologicas e
+            WHERE e.chofer_id = c.id ORDER BY e.fecha DESC LIMIT 1
+           ) AS ultima_evaluacion_fecha,
+           (SELECT e.id FROM evaluaciones_psicologicas e
+            WHERE e.chofer_id = c.id
+              AND e.aprobado = true
+              AND e.fecha >= NOW() - INTERVAL '1 year'
+            ORDER BY e.fecha DESC LIMIT 1
+           ) IS NOT NULL AS evaluacion_vigente
     FROM choferes c
     JOIN usuarios u ON c.usuario_id = u.id
     LEFT JOIN bancos b ON c.banco_id = b.id

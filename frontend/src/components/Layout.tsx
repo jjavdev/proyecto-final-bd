@@ -24,6 +24,7 @@ const menuItems: Record<string, { label: string; path: string }[]> = {
     { label: 'Banco Chofer', path: '/dashboard/banco-chofer' },
     { label: 'Evaluaciones', path: '/dashboard/evaluaciones-chofer' },
     { label: 'Revisiones', path: '/dashboard/revisiones-vehiculo' },
+    { label: 'Listado Choferes', path: '/dashboard/listado-choferes' },
   ],
   CHOFER: [
     ...shared,

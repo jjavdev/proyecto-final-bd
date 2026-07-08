@@ -1,5 +1,26 @@
 # Pantallas de Formularios
 
+![Login](../docs/capturas/01-login.png)
+![Registro](../docs/capturas/02-registro.png)
+![Perfil Admin](../docs/capturas/03-perfil-admin.png)
+![Perfil Cliente](../docs/capturas/04-perfil-cliente.png)
+![Recargar Saldo](../docs/capturas/05-recargar-saldo.png)
+![Solicitar Viaje](../docs/capturas/06-solicitar-viaje.png)
+![Historial Viajes](../docs/capturas/07-historial-viajes.png)
+![Perfil Chofer](../docs/capturas/08-perfil-chofer.png)
+![Vehiculos](../docs/capturas/09-vehiculos.png)
+![Viajes Chofer](../docs/capturas/10-viajes-chofer.png)
+![Perfil Personal Admin](../docs/capturas/11-perfil-personal.png)
+![Evaluar Chofer](../docs/capturas/12-evaluar-chofer.png)
+![Revisar Vehiculo](../docs/capturas/13-revisar-vehiculo.png)
+![Pagar Chofer](../docs/capturas/14-pagar-chofer.png)
+![Ganancias](../docs/capturas/15-ganancias.png)
+![Traslados Admin](../docs/capturas/16-traslados-admin.png)
+![Listado Choferes](../docs/capturas/17-listado-choferes.png)
+![Reportes](../docs/capturas/18-reportes.png)
+
+---
+
 ## 1. Login
 
 **Ruta:** `/login`

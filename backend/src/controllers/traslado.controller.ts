@@ -21,10 +21,20 @@ export async function solicitarTraslado(req: AuthRequest, res: Response) {
     return res.status(400).json({ error: 'Saldo insuficiente' })
   }
 
-  // Selecciona un chofer activo que no tenga viajes pendientes
+  // Selecciona un chofer activo con vehiculo apto y revision vigente (< 1 año)
   const choferes = await prisma.$queryRaw<{ id: number }[]>`
     SELECT c.id FROM choferes c
     WHERE c.activo = true
+    AND EXISTS (
+      SELECT 1 FROM vehiculos v
+      WHERE v.chofer_id = c.id AND v.activo = true
+      AND EXISTS (
+        SELECT 1 FROM revisiones_vehiculares rv
+        WHERE rv.vehiculo_id = v.id
+          AND rv.apto = true
+          AND rv.fecha >= NOW() - INTERVAL '1 year'
+      )
+    )
     AND c.id NOT IN (
       SELECT t.chofer_id FROM traslados t
       WHERE t.estado = 'pendiente'

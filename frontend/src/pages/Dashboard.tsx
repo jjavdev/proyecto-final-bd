@@ -25,6 +25,7 @@ import ListadoTraslados from './admin/ListadoTraslados'
 import BancoChofer from './admin/BancoChofer'
 import EvaluacionesChofer from './admin/EvaluacionesChofer'
 import RevisionesVehiculo from './admin/RevisionesVehiculo'
+import ListadoChoferes from './admin/ListadoChoferes'
 import Perfil from './Perfil'
 
 export default function Dashboard() {
@@ -64,6 +65,7 @@ export default function Dashboard() {
             <Route path="banco-chofer" element={<BancoChofer />} />
             <Route path="evaluaciones-chofer" element={<EvaluacionesChofer />} />
             <Route path="revisiones-vehiculo" element={<RevisionesVehiculo />} />
+            <Route path="listado-choferes" element={<ListadoChoferes />} />
           </>
         )}
 

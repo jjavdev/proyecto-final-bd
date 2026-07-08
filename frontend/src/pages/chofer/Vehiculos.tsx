@@ -38,6 +38,21 @@ export default function Vehiculos() {
     { key: 'anio', label: 'Año' },
     { key: 'color', label: 'Color' },
     { key: 'activo', label: 'Activo', render: (v: boolean) => v ? 'Sí' : 'No' },
+    {
+      key: 'revision_vigente', label: 'Revisión',
+      render: (v: boolean, row: any) => {
+        if (row.ultima_revision_fecha) {
+          const fecha = new Date(row.ultima_revision_fecha).toLocaleDateString()
+          const ok = row.ultima_revision_apta && v
+          return (
+            <span className={`badge ${ok ? 'bg-success' : 'bg-warning text-dark'}`}>
+              {ok ? `Vigente (${fecha})` : `Vencida (${fecha})`}
+            </span>
+          )
+        }
+        return <span className="badge bg-secondary">Sin revisión</span>
+      },
+    },
   ]
 
   return (
