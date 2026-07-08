@@ -1,13 +1,8 @@
-// Layout principal con sidebar de navegacion.
-// Muestra el menu segun el rol del usuario.
-// Para CLIENTE muestra saldo disponible. Para CHOFER muestra saldos pendiente/pagado.
-
 import { ReactNode, useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../services/api'
 
-// Menu de navegacion compartido (Inicio + Perfil) y especifico por rol
 const shared = [
   { label: 'Inicio', path: '/dashboard' },
   { label: 'Mi Perfil', path: '/dashboard/perfil' },
@@ -69,53 +64,62 @@ export default function Layout({ children }: { children: ReactNode }) {
     navigate('/login')
   }
 
+  const rolNames: Record<string, string> = {
+    ADMIN: 'Administrador',
+    CHOFER: 'Chofer',
+    CLIENTE: 'Cliente',
+    PERSONAL_ADMIN: 'Personal Administrativo',
+  }
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', margin: 0, fontFamily: 'Arial, sans-serif' }}>
-      <nav style={{ width: 240, background: '#1a1a2e', color: '#fff', padding: 20, display: 'flex', flexDirection: 'column' }}>
-        <h2 style={{ margin: '0 0 20px 0', fontSize: 20 }}>Decarrerita</h2>
-        <p style={{ fontSize: 12, opacity: 0.7, marginBottom: 4 }}>{usuario?.rol} — {usuario?.nombre}</p>
-        <p style={{ fontSize: 11, opacity: 0.5, marginBottom: 20 }}>{usuario?.email}</p>
+    <div className="layout-wrapper">
+      <nav className="sidebar bg-dark text-white p-4">
+        <h2 className="mb-3 fw-bold fs-4">Decarrerita</h2>
+        <p className="small opacity-75 mb-0">{rolNames[usuario?.rol || ''] || usuario?.rol}</p>
+        <p className="small opacity-50 mb-3">{usuario?.email}</p>
 
         {usuario?.rol === 'CLIENTE' && saldo !== null && (
-          <div style={{ background: '#16213e', borderRadius: 8, padding: '12px 15px', marginBottom: 20 }}>
-            <p style={{ fontSize: 11, opacity: 0.7, margin: 0 }}>Saldo disponible</p>
-            <p style={{ fontSize: 22, fontWeight: 700, margin: '4px 0 0', color: '#4ecca3' }}>${saldo.toFixed(2)}</p>
+          <div className="p-3 rounded mb-3" style={{ background: '#16213e' }}>
+            <p className="small opacity-75 mb-0">Saldo disponible</p>
+            <p className="fs-4 fw-bold mb-0" style={{ color: '#4ecca3' }}>${saldo.toFixed(2)}</p>
           </div>
         )}
 
         {usuario?.rol === 'CHOFER' && choferStats && (
-          <div style={{ background: '#16213e', borderRadius: 8, padding: '12px 15px', marginBottom: 20 }}>
-            <p style={{ fontSize: 11, opacity: 0.7, margin: 0 }}>Por cobrar</p>
-            <p style={{ fontSize: 16, fontWeight: 700, margin: '4px 0 0', color: '#f0a500' }}>${choferStats.saldo_pendiente.toFixed(2)}</p>
-            <p style={{ fontSize: 11, opacity: 0.7, margin: '8px 0 0' }}>Cobrado</p>
-            <p style={{ fontSize: 16, fontWeight: 700, margin: '4px 0 0', color: '#4ecca3' }}>${choferStats.saldo_pagado.toFixed(2)}</p>
+          <div className="p-3 rounded mb-3" style={{ background: '#16213e' }}>
+            <p className="small opacity-75 mb-0">Por cobrar</p>
+            <p className="fs-5 fw-bold mb-0" style={{ color: '#f0a500' }}>${choferStats.saldo_pendiente.toFixed(2)}</p>
+            <p className="small opacity-75 mb-0 mt-2">Cobrado</p>
+            <p className="fs-5 fw-bold mb-0" style={{ color: '#4ecca3' }}>${choferStats.saldo_pagado.toFixed(2)}</p>
           </div>
         )}
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
+        <div className="d-flex flex-column gap-1 flex-grow-1">
           {items.map((item) => (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
+              className={`btn text-start rounded py-2 px-3 border-0 ${
+                location.pathname === item.path
+                  ? 'fw-bold' : ''
+              }`}
               style={{
-                textAlign: 'left', padding: '10px 12px', border: 'none', borderRadius: 6,
-                cursor: 'pointer', fontSize: 14,
                 background: location.pathname === item.path ? '#16213e' : 'transparent',
-                color: '#fff', fontWeight: location.pathname === item.path ? 700 : 400,
+                color: '#fff',
+                fontSize: 14,
               }}
             >
               {item.label}
             </button>
           ))}
         </div>
-        <button onClick={handleLogout} style={{
-          padding: '10px 12px', border: 'none', borderRadius: 6, cursor: 'pointer',
-          background: '#e94560', color: '#fff', fontSize: 14, marginTop: 20,
-        }}>
+
+        <button onClick={handleLogout} className="btn w-100 mt-3 border-0 py-2 rounded"
+          style={{ background: '#e94560', color: '#fff', fontSize: 14 }}>
           Cerrar Sesión
         </button>
       </nav>
-      <main style={{ flex: 1, padding: 30, background: '#f5f5f5' }}>
+      <main className="main-content">
         {children}
       </main>
     </div>

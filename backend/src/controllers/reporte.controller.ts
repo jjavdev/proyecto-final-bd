@@ -6,9 +6,9 @@ import { prisma } from '../index'
 import { AuthRequest } from '../middlewares/auth'
 
 // GET /api/reportes/traslados — Lista traslados con datos del chofer, cliente y vehiculo.
-// Filtros opcionales: inicio, fin (rango de fechas), estado (pendiente/completado/cancelado).
+// Filtros opcionales: inicio, fin (rango de fechas), estado, pagado (true/false).
 export async function listarTraslados(req: AuthRequest, res: Response) {
-  const { inicio, fin, estado } = req.query
+  const { inicio, fin, estado, pagado } = req.query
 
   let sql = `
     SELECT t.id, t.origen, t.destino, t.costo, t.estado, t.fecha, t.pagado,
@@ -39,6 +39,10 @@ export async function listarTraslados(req: AuthRequest, res: Response) {
   if (estado) {
     params.push(estado)
     sql += ` AND t.estado = $${params.length}`
+  }
+  if (pagado !== undefined) {
+    params.push(pagado === 'true')
+    sql += ` AND t.pagado = $${params.length}`
   }
 
   sql += ` ORDER BY t.fecha DESC`

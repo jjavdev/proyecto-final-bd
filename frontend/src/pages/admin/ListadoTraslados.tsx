@@ -7,6 +7,7 @@ export default function ListadoTraslados() {
   const [inicio, setInicio] = useState('')
   const [fin, setFin] = useState('')
   const [estado, setEstado] = useState('')
+  const [pagado, setPagado] = useState('')
   const [data, setData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -18,6 +19,7 @@ export default function ListadoTraslados() {
       if (inicio) params.inicio = inicio
       if (fin) params.fin = fin
       if (estado) params.estado = estado
+      if (pagado) params.pagado = pagado
       const r = await api.get('/reportes/traslados', { params })
       setData(r.data)
     } catch {} finally { setLoading(false) }
@@ -48,6 +50,7 @@ export default function ListadoTraslados() {
     { key: 'fecha', label: 'Fecha', render: (v: string) => new Date(v).toLocaleString() },
     { key: 'chofer_nombre', label: 'Chofer', render: (_: any, row: any) => `${row.chofer_nombre} ${row.chofer_apellido}` },
     { key: 'cliente_nombre', label: 'Cliente', render: (_: any, row: any) => `${row.cliente_nombre} ${row.cliente_apellido}` },
+    { key: 'pagado', label: 'Pagado', render: (v: boolean) => v ? 'Sí' : 'No' },
     { key: 'placa', label: 'Vehículo' },
     {
       key: 'accion', label: 'Acción',
@@ -78,6 +81,14 @@ export default function ListadoTraslados() {
             <option value="pendiente">Pendiente</option>
             <option value="completado">Completado</option>
             <option value="cancelado">Cancelado</option>
+          </select>
+        </div>
+        <div>
+          <label style={{ fontSize: 12, display: 'block' }}>Pagado</label>
+          <select value={pagado} onChange={(e) => setPagado(e.target.value)} style={s}>
+            <option value="">Todos</option>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
           </select>
         </div>
         <button type="submit" style={btn} disabled={loading}>{loading ? '...' : 'Filtrar'}</button>

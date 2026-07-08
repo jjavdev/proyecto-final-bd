@@ -55,16 +55,20 @@ export async function consultarSaldo(req: AuthRequest, res: Response) {
   res.json({ saldo: cliente.saldo })
 }
 
-// GET /api/clientes/viajes — Historial de viajes del cliente.
+// GET /api/clientes/viajes — Historial de viajes del cliente con filtros opcionales.
+// Filtros: inicio, fin (rango de fechas), estado (pendiente/completado/cancelado).
 // Muestra datos del chofer y del vehiculo asignado.
 export async function historialViajes(req: AuthRequest, res: Response) {
   const usuario_id = req.usuario!.id
+  const { inicio, fin, estado } = req.query
+
   const cliente = await prisma.cliente.findUnique({ where: { usuario_id } })
   if (!cliente) return res.status(404).json({ error: 'Cliente no encontrado' })
 
-  const viajes = await prisma.$queryRaw`
+  let sql = `
     SELECT t.id, t.origen, t.destino, t.costo, t.estado, t.fecha,
-           u.nombre AS chofer_nombre, v.placa, v.marca, v.modelo
+           u.nombre AS chofer_nombre, u.apellido AS chofer_apellido,
+           v.placa, v.marca, v.modelo
     FROM traslados t
     JOIN choferes c ON t.chofer_id = c.id
     JOIN usuarios u ON c.usuario_id = u.id
@@ -72,9 +76,31 @@ export async function historialViajes(req: AuthRequest, res: Response) {
       SELECT v2.placa, v2.marca, v2.modelo FROM vehiculos v2
       WHERE v2.chofer_id = c.id AND v2.activo = true LIMIT 1
     ) v ON true
-    WHERE t.cliente_id = ${cliente.id}
-    ORDER BY t.fecha DESC
+    WHERE t.cliente_id = $1
   `
+
+  const params: any[] = [cliente.id]
+  let idx = 2
+
+  if (inicio) {
+    params.push(inicio)
+    sql += ` AND t.fecha >= $${idx}::date`
+    idx++
+  }
+  if (fin) {
+    params.push(fin)
+    sql += ` AND t.fecha <= $${idx}::date`
+    idx++
+  }
+  if (estado) {
+    params.push(estado)
+    sql += ` AND t.estado = $${idx}`
+    idx++
+  }
+
+  sql += ` ORDER BY t.fecha DESC`
+
+  const viajes = await prisma.$queryRawUnsafe(sql, ...params)
 
   res.json(viajes)
 }

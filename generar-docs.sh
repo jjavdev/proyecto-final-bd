@@ -8,8 +8,7 @@ npx prisma generate
 
 echo ""
 echo "=== Generando diccionario de datos ==="
-npm run docs:diccionario > ../docs/diccionario-datos.md
-echo "Diccionario generado en docs/diccionario-datos.md"
+npm run docs:diccionario
 
 echo ""
 echo "=== Documentacion generada exitosamente ==="

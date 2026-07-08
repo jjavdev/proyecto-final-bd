@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client'
+import * as fs from 'fs'
+import * as path from 'path'
 
 const prisma = new PrismaClient()
 
@@ -30,6 +32,8 @@ async function main() {
     { name: 'personal_admin', desc: 'Datos del personal administrativo que gestiona el sistema' },
   ]
 
+  const tableNames = tables.map((t) => t.name)
+
   const info = await prisma.$queryRaw<ColumnInfo[]>`
     SELECT
       c.table_name::text,
@@ -56,9 +60,9 @@ async function main() {
       WHERE tc.constraint_type = 'FOREIGN KEY'
     ) fk ON c.table_name = fk.table_name AND c.column_name = fk.column_name
     WHERE c.table_schema = 'public'
-      AND c.table_name IN (${tables.map((t) => t.name)})
     ORDER BY c.table_name, c.ordinal_position
   `
+  const infoFiltered = info.filter((c) => tableNames.includes(c.table_name))
 
   const descriptions: Record<string, string> = {
     id: 'Identificador unico autoincremental',
@@ -102,26 +106,38 @@ async function main() {
     pagado: 'Indica si el traslado ha sido pagado al chofer',
   }
 
-  for (const table of tables) {
-    const cols = info.filter((c) => c.table_name === table.name)
-    const pk = cols.filter((c) => c.is_pk).map((c) => c.column_name).join(', ')
-    const fk = cols.filter((c) => c.is_fk).map((c) => c.fk_ref).join(', ')
+  const outputPath = path.resolve(__dirname, '../docs/diccionario-datos.md')
+  const lines: string[] = []
 
-    console.log(`\n## ${table.name}`)
-    console.log(`**Descripcion:** ${table.desc}`)
-    console.log(`**Clave Primaria:** ${pk}`)
-    if (fk) console.log(`**Claves Foraneas:** ${fk}`)
-    console.log()
-    console.log('| Campo | Tipo | Nulo | Defecto | PK | FK | Descripcion |')
-    console.log('|-------|------|------|---------|----|----|-------------|')
+  lines.push('# Diccionario de Datos - Decarrerita')
+  lines.push()
+  lines.push('Documento generado automaticamente desde la base de datos.')
+  lines.push()
+
+  for (const table of tables) {
+    const cols = infoFiltered.filter((c) => c.table_name === table.name)
+    const pk = cols.filter((c) => c.is_pk).map((c) => c.column_name).join(', ')
+    const fkCols = cols.filter((c) => c.is_fk)
+    const fk = fkCols.map((c) => c.fk_ref).join(', ')
+
+    lines.push(`\n## ${table.name}`)
+    lines.push(`**Descripcion:** ${table.desc}`)
+    lines.push(`**Clave Primaria:** ${pk}`)
+    if (fk) lines.push(`**Claves Foraneas:** ${fk}`)
+    lines.push('')
+    lines.push('| Campo | Tipo | Nulo | Defecto | PK | FK | Descripcion |')
+    lines.push('|-------|------|------|---------|----|----|-------------|')
 
     for (const col of cols) {
       const desc = descriptions[col.column_name] || ''
-      console.log(
+      lines.push(
         `| ${col.column_name} | ${col.data_type} | ${col.is_nullable === 'YES' ? 'SI' : 'NO'} | ${col.column_default || '-'} | ${col.is_pk ? 'X' : ''} | ${col.is_fk ? 'X' : ''} | ${desc} |`
       )
     }
   }
+
+  fs.writeFileSync(outputPath, lines.join('\n'), 'utf-8')
+  console.log(`Diccionario de datos generado en: ${outputPath}`)
 
   await prisma.$disconnect()
 }

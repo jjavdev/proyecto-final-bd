@@ -1,0 +1,161 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+}
+
+.layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.card-custom {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s;
+}
+
+.card-custom:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.table-custom {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.table-custom thead th {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 12px 14px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+.table-custom thead th:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.table-custom thead th:last-child {
+  border-radius: 0 8px 0 0;
+}
+
+.table-custom tbody td {
+  padding: 10px 14px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.table-custom tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-custom tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.form-control-sm-custom {
+  padding: 10px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control-sm-custom:focus {
+  border-color: #1a1a2e;
+  box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+  outline: none;
+}
+
+.btn-primary-custom {
+  background: #1a1a2e;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-primary-custom:hover {
+  opacity: 0.9;
+}
+
+.btn-primary-custom:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-success-custom {
+  background: #4ecca3;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-success-custom:hover {
+  opacity: 0.9;
+}
+
+.btn-danger-custom {
+  background: #e94560;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-danger-custom:hover {
+  opacity: 0.9;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-completado {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-cancelado {
+  background: #f8d7da;
+  color: #721c24;
+}

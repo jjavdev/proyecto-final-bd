@@ -314,25 +314,39 @@ const ganancias = await prisma.$queryRaw`
 
 ---
 
-## Documentación del Proyecto
+## Documentación del Proyecto (Informe)
 
-El proyecto incluye herramientas para generar automáticamente los artefactos del informe:
+El proyecto incluye los siguientes documentos del informe:
 
-### Diagrama Entidad-Relación (ERD)
+| Documento | Archivo | Descripción |
+|-----------|---------|-------------|
+| Planteamiento del problema | [`docs/planteamiento-problema.md`](docs/planteamiento-problema.md) | Contexto, requerimientos y decisiones de diseño |
+| Carta estructurada del sistema | [`docs/carta-estructurada.md`](docs/carta-estructurada.md) | Diagrama de módulos, jerarquía de componentes y arquitectura |
+| Herramientas de desarrollo | `README.md` | Stack tecnológico detallado en la sección correspondiente |
+| Modelo Entidad-Relación | [`backend/docs/ERD.md`](backend/docs/ERD.md) | Diagrama E-R en formato Mermaid (generado automáticamente) |
+| Modelo Relacional | `backend/prisma/schema.prisma` | Esquema Prisma con 12 tablas, relaciones y restricciones |
+| Diccionario de datos | [`docs/diccionario-datos.md`](docs/diccionario-datos.md) | Tablas, campos, tipos, PK y FK (generado automáticamente) |
+| Pantallas de formularios | [`docs/pantallas-formularios.md`](docs/pantallas-formularios.md) | Descripción de cada formulario del sistema |
+| Pantallas de consultas | [`docs/pantallas-consultas.md`](docs/pantallas-consultas.md) | Salidas de consultas con scripts SQL |
+
+### Generación Automática
+
 ```bash
 ./generar-docs.sh
-# o paso a paso:
+```
+
+Esto genera:
+- `backend/docs/ERD.md` — Diagrama Entidad-Relación
+- `docs/diccionario-datos.md` — Diccionario de datos desde `information_schema`
+
+Ejecución individual:
+```bash
+# Solo ERD
 cd backend && npx prisma generate
-```
-Genera `docs/ERD.md` con el diagrama en formato Mermaid.
 
-### Diccionario de Datos
-```bash
+# Solo diccionario
 cd backend && npm run docs:diccionario
-# o:
-./generar-docs.sh
 ```
-Genera `docs/diccionario-datos.md` con la descripción de cada tabla, campos, tipos, PK y FK.
 
 ---
 
