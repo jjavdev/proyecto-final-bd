@@ -79,7 +79,7 @@ async function main() {
     }
   })
 
-  await prisma.chofer.upsert({
+  const chofer = await prisma.chofer.upsert({
     where: { usuario_id: choferU.id },
     update: {},
     create: {
@@ -88,6 +88,22 @@ async function main() {
       nro_cuenta: '0102-1234-56-7890123'
     }
   })
+
+  // Evaluacion psicologica aprobada para el chofer
+  const evaluador = await prisma.personalAdmin.findFirst()
+  if (evaluador) {
+    await prisma.evaluacionPsicologica.upsert({
+      where: { id: 1 },
+      update: {},
+      create: {
+        chofer_id: chofer.id,
+        nota: 85,
+        fecha: new Date(),
+        aprobado: true,
+        evaluador_id: evaluador.id
+      }
+    })
+  }
 
   // Cliente de prueba con saldo inicial de $100
   const clienteU = await prisma.usuario.upsert({

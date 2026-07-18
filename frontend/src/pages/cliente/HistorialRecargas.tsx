@@ -4,7 +4,7 @@ import Card from '../../components/Card'
 import Table from '../../components/Table'
 
 export default function HistorialRecargas() {
-  const [recargas, setRecargas] = useState([])
+  const [recargas, setRecargas] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -19,11 +19,15 @@ export default function HistorialRecargas() {
     { key: 'fecha', label: 'Fecha', render: (v: string) => new Date(v).toLocaleString() },
   ]
 
-  if (loading) return <p>Cargando...</p>
-
   return (
     <Card title="Historial de Recargas">
-      <Table columns={columns} data={recargas} emptyMsg="No has realizado recargas aún" />
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <Table columns={columns} data={recargas} emptyMsg="No has realizado recargas aún" />
+      )}
     </Card>
   )
 }

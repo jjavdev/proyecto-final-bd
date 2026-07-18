@@ -104,3 +104,16 @@ export async function historialViajes(req: AuthRequest, res: Response) {
 
   res.json(viajes)
 }
+
+// GET /api/clientes/referencia-recarga — Promedio de costo de viajes completados.
+// Sirve como referencia para sugerir un monto maximo de recarga al cliente.
+export async function referenciaRecarga(_req: AuthRequest, res: Response) {
+  const result = await prisma.$queryRaw<{ promedio: number }[]>`
+    SELECT COALESCE(AVG(costo), 0) AS promedio
+    FROM traslados
+    WHERE estado = 'completado'
+  `
+  const promedio = Number(result[0]?.promedio) || 10
+  const sugerido = Math.ceil(promedio * 2 / 5) * 5
+  res.json({ promedio: Math.round(promedio * 100) / 100, sugerido })
+}

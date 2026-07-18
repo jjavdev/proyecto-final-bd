@@ -24,16 +24,16 @@ const revisionSchema = z.object({
 const pagoSchema = z.object({
   chofer_id: z.number().int(),
   monto: z.number().positive(),
-  nro_referencia: z.string().min(1)
+  nro_referencia: z.string().regex(/^\d{4}$/, 'Debe ser exactamente 4 dígitos numéricos')
 })
 
 const bancoSchema = z.object({
-  nombre: z.string().min(1)
+  nombre: z.string().min(1, 'Requerido').max(50)
 })
 
 const bancoChoferSchema = z.object({
   banco_id: z.number().int(),
-  nro_cuenta: z.string().min(5)
+  nro_cuenta: z.string().min(5, 'Mínimo 5 caracteres').max(30).regex(/^\d+$/, 'Solo dígitos')
 })
 
 router.post('/evaluar-chofer', authenticate, authorize('PERSONAL_ADMIN'), validate(evaluacionSchema), evaluarChofer)

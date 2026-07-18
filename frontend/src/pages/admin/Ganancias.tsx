@@ -14,7 +14,23 @@ export default function Ganancias() {
     e.preventDefault()
     setError(''); setLoading(true)
     try {
-      const r = await api.get('/reportes/ganancias', { params: { inicio, fin } })
+      const params: any = {}
+      if (inicio) params.inicio = inicio
+      if (fin) params.fin = fin
+      const r = await api.get('/reportes/ganancias', { params })
+      setData(r.data)
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Error al consultar')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function filtrarTodo() {
+    setError(''); setLoading(true)
+    setInicio(''); setFin('')
+    try {
+      const r = await api.get('/reportes/ganancias')
       setData(r.data)
     } catch (err: any) {
       setError(err.response?.data?.error || 'Error al consultar')
@@ -32,22 +48,30 @@ export default function Ganancias() {
 
   return (
     <Card title="Ganancias por Período">
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'end' }}>
+      <form onSubmit={handleSubmit} className="flex gap-3 mb-5 items-end flex-wrap">
         <div>
-          <label style={{ fontSize: 12, display: 'block', marginBottom: 4 }}>Fecha Inicio</label>
-          <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} required style={s} />
+          <label className="text-xs text-on-surface-variant block mb-1">Fecha Inicio</label>
+          <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
         </div>
         <div>
-          <label style={{ fontSize: 12, display: 'block', marginBottom: 4 }}>Fecha Fin</label>
-          <input type="date" value={fin} onChange={(e) => setFin(e.target.value)} required style={s} />
+          <label className="text-xs text-on-surface-variant block mb-1">Fecha Fin</label>
+          <input type="date" value={fin} onChange={(e) => setFin(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
         </div>
-        <button type="submit" style={btn} disabled={loading}>Consultar</button>
+        <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">
+          {loading ? '...' : 'Consultar'}
+        </button>
+        <button type="button" onClick={filtrarTodo} disabled={loading} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">
+          Filtrar Todo
+        </button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {loading ? <p>Cargando...</p> : <Table columns={columns} data={data} emptyMsg="No hay datos para el período seleccionado" />}
+      {error && <p className="text-error text-sm mb-4 py-2.5 px-4 bg-error/10 border border-error/30 rounded-md">{error}</p>}
+      {loading && !data.length ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <Table columns={columns} data={data} emptyMsg="No hay datos para el período seleccionado" />
+      )}
     </Card>
   )
 }
-
-const s: React.CSSProperties = { padding: '10px 12px', border: '1px solid #ddd', borderRadius: 6, fontSize: 14 }
-const btn: React.CSSProperties = { padding: '10px 12px', border: 'none', borderRadius: 6, background: '#1a1a2e', color: '#fff', fontSize: 14, cursor: 'pointer' }

@@ -32,6 +32,8 @@ const menuItems: Record<string, { label: string; path: string }[]> = {
     { label: 'Contactos Emergencia', path: '/dashboard/contactos' },
     { label: 'Datos Bancarios', path: '/dashboard/banco' },
     { label: 'Mis Viajes', path: '/dashboard/viajes' },
+    { label: 'Calificar Cliente', path: '/dashboard/calificar' },
+    { label: 'Mis Calificaciones', path: '/dashboard/mis-calificaciones' },
   ],
   CLIENTE: [
     ...shared,
@@ -39,6 +41,8 @@ const menuItems: Record<string, { label: string; path: string }[]> = {
     { label: 'Solicitar Viaje', path: '/dashboard/solicitar-viaje' },
     { label: 'Historial Viajes', path: '/dashboard/historial-viajes' },
     { label: 'Historial Recargas', path: '/dashboard/historial-recargas' },
+    { label: 'Calificar Chofer', path: '/dashboard/calificar' },
+    { label: 'Mis Calificaciones', path: '/dashboard/mis-calificaciones' },
   ],
 }
 
@@ -74,49 +78,40 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="layout-wrapper">
-      <nav className="sidebar bg-dark text-white p-4">
-        <h2 className="mb-3 fw-bold fs-4">Decarrerita</h2>
-        <p className="small opacity-75 mb-0">{rolNames[usuario?.rol || ''] || usuario?.rol}</p>
-        <p className="small opacity-50 mb-3">{usuario?.email}</p>
+      <nav className="sidebar">
+        <h2 className="font-headline text-3xl font-extrabold italic text-primary-fixed-dim -tracking-[0.02em] mb-1">Decarrerita</h2>
+        <p className="font-body text-xs tracking-[0.1em] text-on-surface-variant mb-1">{rolNames[usuario?.rol || ''] || usuario?.rol}</p>
+        <p className="font-body text-sm text-on-surface-variant/50 mb-6">{usuario?.email}</p>
 
         {usuario?.rol === 'CLIENTE' && saldo !== null && (
-          <div className="p-3 rounded mb-3" style={{ background: '#16213e' }}>
-            <p className="small opacity-75 mb-0">Saldo disponible</p>
-            <p className="fs-4 fw-bold mb-0" style={{ color: '#4ecca3' }}>${saldo.toFixed(2)}</p>
+          <div className="saldo-box">
+            <p className="font-body text-xs tracking-[0.05em] text-on-surface-variant mb-0.5">Saldo disponible</p>
+            <p className="font-headline text-2xl font-bold text-primary">{saldo.toFixed(2)}</p>
           </div>
         )}
 
         {usuario?.rol === 'CHOFER' && choferStats && (
-          <div className="p-3 rounded mb-3" style={{ background: '#16213e' }}>
-            <p className="small opacity-75 mb-0">Por cobrar</p>
-            <p className="fs-5 fw-bold mb-0" style={{ color: '#f0a500' }}>${choferStats.saldo_pendiente.toFixed(2)}</p>
-            <p className="small opacity-75 mb-0 mt-2">Cobrado</p>
-            <p className="fs-5 fw-bold mb-0" style={{ color: '#4ecca3' }}>${choferStats.saldo_pagado.toFixed(2)}</p>
+          <div className="saldo-box">
+            <p className="font-body text-xs tracking-[0.05em] text-on-surface-variant mb-0.5">Por cobrar</p>
+            <p className="font-headline text-lg font-bold text-primary-fixed-dim">${Math.max(0, choferStats.saldo_pendiente).toFixed(2)}</p>
+            <p className="font-body text-xs tracking-[0.05em] text-on-surface-variant mb-0.5 mt-2">Cobrado</p>
+            <p className="font-headline text-2xl font-bold text-primary">${choferStats.saldo_pagado.toFixed(2)}</p>
           </div>
         )}
 
-        <div className="d-flex flex-column gap-1 flex-grow-1">
+        <div className="flex flex-col gap-0.5 flex-1">
           {items.map((item) => (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className={`btn text-start rounded py-2 px-3 border-0 ${
-                location.pathname === item.path
-                  ? 'fw-bold' : ''
-              }`}
-              style={{
-                background: location.pathname === item.path ? '#16213e' : 'transparent',
-                color: '#fff',
-                fontSize: 14,
-              }}
+              className={`sidebar-link${location.pathname === item.path ? ' active' : ''}`}
             >
               {item.label}
             </button>
           ))}
         </div>
 
-        <button onClick={handleLogout} className="btn w-100 mt-3 border-0 py-2 rounded"
-          style={{ background: '#e94560', color: '#fff', fontSize: 14 }}>
+        <button onClick={handleLogout} className="logout-btn mt-4">
           Cerrar Sesión
         </button>
       </nav>

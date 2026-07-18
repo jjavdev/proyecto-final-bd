@@ -28,6 +28,7 @@ import trasladoRoutes from './routes/traslado.routes'
 import reporteRoutes from './routes/reporte.routes'
 import bancosRoutes from './routes/bancos.routes'
 import vehiculoRoutes from './routes/vehiculo.routes'
+import calificacionRoutes from './routes/calificacion.routes'
 
 app.use('/api/auth', authRoutes)
 app.use('/api/clientes', clienteRoutes)
@@ -37,6 +38,7 @@ app.use('/api/traslados', trasladoRoutes)
 app.use('/api/reportes', reporteRoutes)
 app.use('/api/bancos', bancosRoutes)
 app.use('/api/vehiculos', vehiculoRoutes)
+app.use('/api/calificaciones', calificacionRoutes)
 
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err)

@@ -10,9 +10,12 @@ import { validate } from '../middlewares/validate'
 const router = Router()
 
 const trasladoSchema = z.object({
-  origen: z.string().min(1),
-  destino: z.string().min(1),
-  distancia_km: z.number().positive()
+  origen: z.string().min(1, 'Requerido').max(200),
+  destino: z.string().min(1, 'Requerido').max(200),
+  distancia_km: z.number().positive('Debe ser positiva').max(999.9, 'Máximo 999.9 km')
+}).refine((data) => data.origen !== data.destino, {
+  message: 'El origen y destino no pueden ser iguales',
+  path: ['destino'],
 })
 
 router.post('/', authenticate, authorize('CLIENTE'), validate(trasladoSchema), solicitarTraslado)

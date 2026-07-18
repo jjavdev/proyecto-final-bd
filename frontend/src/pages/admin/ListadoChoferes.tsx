@@ -29,17 +29,17 @@ export default function ListadoChoferes() {
       render: (v: boolean, row: any) => {
         const vigente = row.evaluacion_vigente
         return (
-          <>
-            <span className={`badge ${v ? 'bg-success' : 'bg-secondary'} me-2`}>{v ? 'Sí' : 'No'}</span>
-            {!vigente && v && <span className="badge bg-warning text-dark">Eval. vencida</span>}
-          </>
+          <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${v ? 'bg-primary/20 text-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
+            {v ? 'Sí' : 'No'}
+            {!vigente && v ? ' (Eval. vencida)' : ''}
+          </span>
         )
       },
     },
     {
       key: 'ultima_evaluacion_nota', label: 'Últ. Evaluación',
       render: (v: number, row: any) => {
-        if (!v) return <span className="text-muted">Sin evaluar</span>
+        if (!v) return <span className="text-on-surface-variant/60 italic text-sm">Sin evaluar</span>
         const fecha = row.ultima_evaluacion_fecha ? new Date(row.ultima_evaluacion_fecha).toLocaleDateString() : ''
         return `${v}/100 (${fecha})`
       },
@@ -48,7 +48,8 @@ export default function ListadoChoferes() {
 
   return (
     <Card title="Listado de Choferes">
-      <button onClick={load} className="btn btn-primary-custom mb-3" disabled={loading}>
+      <button onClick={load} disabled={loading} className="mb-4 px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all flex items-center gap-2 disabled:opacity-50">
+        {loading && <span className="w-4 h-4 border-2 border-on-surface border-t-transparent rounded-full animate-spin" />}
         {loading ? 'Cargando...' : 'Cargar Choferes'}
       </button>
       <Table columns={columns} data={data} emptyMsg="No hay choferes registrados" />

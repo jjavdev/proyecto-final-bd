@@ -80,15 +80,36 @@ export async function revisarVehiculo(req: AuthRequest, res: Response) {
 export async function pagarChofer(req: AuthRequest, res: Response) {
   const { chofer_id, monto, nro_referencia } = req.body
 
+  const chofer = await prisma.chofer.findUnique({ where: { id: chofer_id } })
+  if (!chofer) {
+    res.status(404).json({ error: 'Chofer no encontrado' })
+    return
+  }
+
+  const pendiente = Math.round(Number(chofer.saldo_pendiente) * 100) / 100
+  const montoRed = Math.round(Number(monto) * 100) / 100
+  if (montoRed < pendiente) {
+    res.status(400).json({ error: `El monto ($${montoRed.toFixed(2)}) es menor al saldo pendiente ($${pendiente.toFixed(2)})` })
+    return
+  }
+  if (montoRed > pendiente) {
+    res.status(400).json({ error: `El monto ($${montoRed.toFixed(2)}) excede el saldo pendiente ($${pendiente.toFixed(2)})` })
+    return
+  }
+
   await prisma.$transaction([
     prisma.$executeRaw`
       INSERT INTO pagos_chofer (chofer_id, monto, fecha, nro_referencia)
       VALUES (${chofer_id}, ${monto}, NOW(), ${nro_referencia})
     `,
     prisma.$executeRaw`
-      UPDATE choferes SET saldo_pendiente = saldo_pendiente - ${monto},
-                          saldo_pagado = saldo_pagado + ${monto}
+      UPDATE choferes SET saldo_pendiente = GREATEST(0, ROUND((saldo_pendiente - ${monto})::numeric, 2)::real),
+                          saldo_pagado = ROUND((saldo_pagado + ${monto})::numeric, 2)::real
       WHERE id = ${chofer_id}
+    `,
+    prisma.$executeRaw`
+      UPDATE traslados SET pagado = true
+      WHERE chofer_id = ${chofer_id} AND estado = 'completado' AND pagado = false
     `
   ])
 
@@ -99,6 +120,8 @@ export async function pagarChofer(req: AuthRequest, res: Response) {
 // La empresa se queda con el 30% del costo de cada traslado completado.
 export async function ganancias(req: AuthRequest, res: Response) {
   const { inicio, fin } = req.query
+  const inicioVal = inicio || null
+  const finVal = fin || null
 
   const ganancias = await prisma.$queryRaw`
     SELECT DATE(t.fecha) AS dia,
@@ -107,25 +130,33 @@ export async function ganancias(req: AuthRequest, res: Response) {
            SUM(t.costo * 0.30) AS ganancia_empresa
     FROM traslados t
     WHERE t.estado = 'completado'
-      AND t.fecha >= ${inicio}::date
-      AND t.fecha <= ${fin}::date
+      AND (${inicioVal}::date IS NULL OR t.fecha >= ${inicioVal}::date)
+      AND (${finVal}::date IS NULL OR t.fecha <= ${finVal}::date)
     GROUP BY DATE(t.fecha)
     ORDER BY dia
   `
 
-  res.json(ganancias)
+  const resultado = (ganancias as any[]).map((r: any) => ({
+    dia: r.dia,
+    viajes: Number(r.viajes),
+    total_bruto: Number(r.total_bruto),
+    ganancia_empresa: Number(r.ganancia_empresa),
+  }))
+  res.json(resultado)
 }
 
 // GET /api/reportes/pagos-chofer — Pagos realizados a un chofer en un periodo.
 export async function pagosAChofer(req: AuthRequest, res: Response) {
   const { chofer_id, inicio, fin } = req.query
+  const inicioVal = inicio || null
+  const finVal = fin || null
 
   const pagos = await prisma.$queryRaw`
     SELECT p.id, p.monto, p.fecha, p.nro_referencia
     FROM pagos_chofer p
     WHERE p.chofer_id = ${Number(chofer_id)}
-      AND p.fecha >= ${inicio}::date
-      AND p.fecha <= ${fin}::date
+      AND (${inicioVal}::date IS NULL OR p.fecha >= ${inicioVal}::date)
+      AND (${finVal}::date IS NULL OR p.fecha <= ${finVal}::date)
     ORDER BY p.fecha DESC
   `
 

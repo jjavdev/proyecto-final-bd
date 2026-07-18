@@ -22,11 +22,15 @@ export default function Perfil() {
     }
   }, [usuario])
 
-  if (!perfil) return <p>Cargando perfil...</p>
+  if (!perfil) return (
+    <div className="flex items-center justify-center py-12">
+      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
 
   return (
     <Card title="Mis Datos Personales">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, maxWidth: 500 }}>
+      <div className="grid grid-cols-2 gap-4 max-w-[500px]">
         <Campo label="Nombre" valor={`${perfil.nombre} ${perfil.apellido}`} />
         <Campo label="Cédula" valor={perfil.cedula} />
         <Campo label="Email" valor={perfil.email} />
@@ -35,10 +39,10 @@ export default function Perfil() {
       </div>
 
       {usuario?.rol === 'CHOFER' && extra && (
-        <div style={{ marginTop: 20 }}>
-          <h4 style={{ margin: '0 0 10px', color: '#1a1a2e' }}>Finanzas</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, maxWidth: 500 }}>
-            <Campo label="Por cobrar" valor={`$${extra.saldo_pendiente.toFixed(2)}`} />
+        <div className="mt-6">
+          <h4 className="text-sm font-semibold tracking-[0.08em] uppercase text-surface-container-high mb-3">Finanzas</h4>
+          <div className="grid grid-cols-2 gap-4 max-w-[500px]">
+            <Campo label="Por cobrar" valor={`$${Math.max(0, extra.saldo_pendiente).toFixed(2)}`} />
             <Campo label="Cobrado" valor={`$${extra.saldo_pagado.toFixed(2)}`} />
           </div>
         </div>
@@ -50,8 +54,8 @@ export default function Perfil() {
 function Campo({ label, valor }: { label: string; valor: string }) {
   return (
     <div>
-      <p style={{ fontSize: 12, color: '#888', margin: 0 }}>{label}</p>
-      <p style={{ fontSize: 16, fontWeight: 600, margin: '2px 0 0' }}>{valor}</p>
+      <p className="text-xs text-on-surface-variant m-0">{label}</p>
+      <p className="text-base font-semibold mt-0.5 text-on-surface">{valor}</p>
     </div>
   )
 }

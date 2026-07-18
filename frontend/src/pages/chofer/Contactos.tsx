@@ -6,8 +6,10 @@ export default function Contactos() {
   const [contactos, setContactos] = useState([{ nombre: '', telefono: '', parentesco: '' }])
   const [msg, setMsg] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   function addContacto() {
+    if (contactos.length >= 5) return
     setContactos([...contactos, { nombre: '', telefono: '', parentesco: '' }])
   }
 
@@ -18,35 +20,39 @@ export default function Contactos() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setMsg(''); setError('')
+    setLoading(true)
     try {
       await api.post('/choferes/contactos', { contactos })
       setMsg('Contactos guardados exitosamente')
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Error al guardar')
+      const msg = err.response?.data?.error
+      setError(typeof msg === 'string' ? msg : 'Error al guardar')
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <Card title="Contactos de Emergencia (mínimo 2)">
-      {msg && <p style={{ color: 'green' }}>{msg}</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 500 }}>
+      {msg && <p className="text-primary text-sm text-center mb-4 py-2.5 px-4 bg-primary/10 border border-primary/30 rounded-md">{msg}</p>}
+      {error && <p className="text-error text-sm text-center mb-4 py-2.5 px-4 bg-error/10 border border-error/30 rounded-md">{error}</p>}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-[600px]">
         {contactos.map((c, i) => (
-          <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <span style={{ fontWeight: 600, minWidth: 20 }}>{i + 1}.</span>
-            <input placeholder="Nombre" value={c.nombre} onChange={(e) => update(i, 'nombre', e.target.value)} required style={s} />
-            <input placeholder="Teléfono" value={c.telefono} onChange={(e) => update(i, 'telefono', e.target.value)} required style={s} />
-            <input placeholder="Parentesco" value={c.parentesco} onChange={(e) => update(i, 'parentesco', e.target.value)} required style={s} />
+          <div key={i} className="flex gap-2 items-center">
+            <span className="font-bold text-on-surface-variant min-w-[20px] text-sm">{i + 1}.</span>
+            <input placeholder="Nombre" value={c.nombre} onChange={(e) => update(i, 'nombre', e.target.value)} required className="flex-1 px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
+            <input placeholder="Teléfono" value={c.telefono} onChange={(e) => update(i, 'telefono', e.target.value.replace(/\D/g, ''))} required className="flex-1 px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
+            <input placeholder="Parentesco" value={c.parentesco} onChange={(e) => update(i, 'parentesco', e.target.value)} required className="flex-1 px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
           </div>
         ))}
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button type="button" onClick={addContacto} style={{ ...btn, background: '#555' }}>+ Agregar Contacto</button>
-          <button type="submit" style={btn}>Guardar Contactos</button>
+        <div className="flex gap-2">
+          <button type="button" onClick={addContacto} disabled={contactos.length >= 5} className="px-4 py-2 rounded-lg bg-surface border border-outline text-on-surface text-sm hover:bg-surface-container transition-all disabled:opacity-50">+ Agregar Contacto</button>
+          <button type="submit" className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all flex items-center gap-2 disabled:opacity-50" disabled={loading}>
+            {loading && <span className="w-4 h-4 border-2 border-on-surface border-t-transparent rounded-full animate-spin" />}
+            {loading ? 'GUARDANDO...' : 'Guardar Contactos'}
+          </button>
         </div>
       </form>
     </Card>
   )
 }
-
-const s: React.CSSProperties = { padding: '8px 10px', border: '1px solid #ddd', borderRadius: 6, fontSize: 14, flex: 1 }
-const btn: React.CSSProperties = { padding: '10px 12px', border: 'none', borderRadius: 6, background: '#1a1a2e', color: '#fff', fontSize: 14, cursor: 'pointer' }

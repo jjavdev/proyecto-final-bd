@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0F0F0F;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(45, 45, 45, 0.5);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(61, 255, 163, 0.3);
+        }
+
+        .neon-border-focus:focus-within {
+            border-color: #3DFFA3;
+            box-shadow: inset 0 0 8px rgba(61, 255, 163, 0.1);
+        }
+
+        .map-gradient-overlay {
+            background: linear-gradient(to bottom, rgba(15, 15, 15, 0.4) 0%, rgba(15, 15, 15, 0) 20%, rgba(15, 15, 15, 0) 80%, rgba(15, 15, 15, 0.9) 100%);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#00e38c",
+                        "on-primary-container": "#007244",
+                        "on-tertiary-container": "#646363",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-background": "#e5e2e1",
+                        "on-secondary-container": "#b7b5b4",
+                        "primary-fixed": "#55ffa8",
+                        "primary-fixed-dim": "#00e38c",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#e4e2e1",
+                        "primary": "#fafff8",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "on-primary-fixed-variant": "#00522f",
+                        "error-container": "#93000a",
+                        "outline-variant": "#3b4a3f",
+                        "tertiary-fixed-dim": "#c8c6c6",
+                        "on-surface": "#e5e2e1",
+                        "surface-variant": "#353534",
+                        "surface-bright": "#3a3939",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "secondary": "#c8c6c5",
+                        "on-tertiary": "#303030",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-error": "#690005",
+                        "primary-container": "#3dffa3",
+                        "outline": "#849587",
+                        "inverse-on-surface": "#313030",
+                        "tertiary": "#fafeff",
+                        "surface-dim": "#131313",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface": "#131313",
+                        "on-secondary": "#313030",
+                        "background": "#131313",
+                        "on-surface-variant": "#bacbbc",
+                        "inverse-surface": "#e5e2e1",
+                        "on-primary-fixed": "#002110",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-container": "#474746",
+                        "surface-container-highest": "#353534",
+                        "on-primary": "#00391f",
+                        "surface-container": "#201f1f",
+                        "tertiary-container": "#e3e0e0",
+                        "inverse-primary": "#006d40"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "80px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "lg": "48px",
+                        "sm": "12px",
+                        "md": "24px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Sora"],
+                        "headline-xl": ["Sora"],
+                        "headline-lg-mobile": ["Sora"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Sora"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background">
+<!-- Shell: SideNavBar (Rail Desktop / Bottom Nav Mobile Hidden for Transactional State as per UX Goal) -->
+<!-- Note: Following "The UX Goal" mandate: Request Ride is task-focused, suppress global navigation. -->
+<main class="relative h-screen w-full overflow-hidden">
+<!-- Background Map Section -->
+<div class="absolute inset-0 z-0 h-full w-full">
+<div class="absolute inset-0 z-10 map-gradient-overlay pointer-events-none"></div>
+<!-- Large Map Visual representing the route -->
+<img alt="Map Overview" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4Cjo9JZtr6b0E8SMSaPB7Ti_fLa2Hc5oCRR9aJda2yx1TUk2OO-I3Bh4EQpeBfU5XsMLhLAp0xIVTB4ytIraRrcVB3kpV-upCdNdJbgO5SE3UWfJ1rvavPEgMoMJALdT7bR-pjY5WamHc0H8u-45Q5ByEHyRx7lY33jKPsN9LRt3FE5KNZ6y3S3Ora8Hr9VJ3bpL6TzbnM9zhC80edP6oPvoALF63-49OHz9qbonoLKeqIFFUWx4HVZ49hpp3Njs2IGliTi4kb98k"/>
+<!-- Animated Map Marker Effect -->
+<div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+<div class="w-4 h-4 bg-primary-container rounded-full neon-glow animate-ping absolute"></div>
+<div class="w-4 h-4 bg-primary-container rounded-full relative z-10 border-2 border-surface"></div>
+<div class="mt-2 glass-panel px-3 py-1 rounded-full text-xs font-label-md text-primary-fixed-dim uppercase tracking-wider">Origen</div>
+</div>
+</div>
+<!-- Header: TopAppBar (Simplified for Task) -->
+<header class="fixed top-0 left-0 w-full z-40 px-md py-sm flex items-center justify-between">
+<div class="flex items-center gap-base">
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-panel text-on-surface hover:bg-surface-bright transition-all" onclick="window.history.back()">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary-fixed-dim tracking-tighter italic">Decarrerita</h1>
+</div>
+<div class="flex items-center gap-sm">
+<div class="glass-panel px-sm py-xs rounded-lg flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[18px]">account_balance_wallet</span>
+<span class="text-label-md font-label-md">$4,250.00</span>
+</div>
+<div class="w-10 h-10 rounded-full border border-outline-variant bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a premium member user, high-end fashion, cinematic lighting, sharp focus, 8k resolution, minimalist studio background, matching the dark obsidian and mint accent aesthetic of the Decarrerita brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbLKiJ0PuzYNaEHukhCWY1YmQSebttKr648sRst-AALoOrkh2yCDgPwGo0AJ9e8yPAlLL-Z_uwIdZPX6XIRTEsQ9vxDFK7Mp-iw83RTo7JuFcs6LoYbqxFTT-m5oc8RHAnnk_IYqPJwHmCxTG1pilgpGzE67KznBsyoW39p-Bq2L1Bz12y2Af7HAJogxVpGwnIvVXiCWBPBKzJnSKSiaL3lq1oc6G9Me_6ocOHl9m8B6WZHK0TX7wT4B0lsQ0XyIeMDut6gpWfeDsP"/>
+</div>
+</div>
+</header>
+<!-- Main Task Canvas: Floating Request Card -->
+<section class="absolute bottom-0 md:bottom-md left-0 md:left-md w-full md:w-[420px] z-30 px-margin-mobile md:px-0 pb-margin-mobile">
+<div class="glass-panel w-full p-md rounded-[24px] shadow-2xl flex flex-col gap-md transition-all duration-500 ease-out transform translate-y-0 opacity-100">
+<!-- Trip Summary Header -->
+<div class="flex flex-col gap-xs">
+<h2 class="font-headline-md text-headline-md font-bold text-white">Solicitar Viaje</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Confirma los detalles de tu trayecto.</p>
+</div>
+<!-- Input Group: Trip Details -->
+<div class="flex flex-col gap-sm">
+<!-- Origin Field -->
+<div class="relative flex flex-col gap-xs">
+<label class="text-label-md font-label-md text-on-surface-variant ml-xs uppercase">Desde</label>
+<div class="flex items-center gap-sm bg-surface-container-lowest border border-outline-variant rounded-xl px-sm py-md neon-border-focus">
+<span class="material-symbols-outlined text-primary-fixed-dim">location_on</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-md font-body-md text-on-surface" placeholder="Ingresa origen" type="text" value="Av. Libertador 1500, CABA"/>
+</div>
+<div class="absolute left-[22px] top-[72px] w-[1px] h-8 bg-outline-variant border-dashed border-l"></div>
+</div>
+<!-- Destination Field -->
+<div class="relative flex flex-col gap-xs">
+<label class="text-label-md font-label-md text-on-surface-variant ml-xs uppercase">Hasta</label>
+<div class="flex items-center gap-sm bg-surface-container-lowest border border-outline-variant rounded-xl px-sm py-md neon-border-focus">
+<span class="material-symbols-outlined text-primary-fixed-dim">sports_score</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-md font-body-md text-on-surface" placeholder="Ingresa destino" type="text" value="Aeropuerto de Ezeiza"/>
+</div>
+</div>
+<!-- Stats Row -->
+<div class="grid grid-cols-2 gap-sm mt-xs">
+<div class="bg-surface-container/50 border border-outline-variant/30 p-sm rounded-xl flex items-center gap-sm">
+<div class="bg-primary-container/10 p-xs rounded-lg">
+<span class="material-symbols-outlined text-primary-fixed-dim">distance</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-on-surface-variant font-bold">Distancia</span>
+<span class="text-label-md font-bold">32.4 km</span>
+</div>
+</div>
+<div class="bg-surface-container/50 border border-outline-variant/30 p-sm rounded-xl flex items-center gap-sm">
+<div class="bg-primary-container/10 p-xs rounded-lg">
+<span class="material-symbols-outlined text-primary-fixed-dim">schedule</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-on-surface-variant font-bold">Tiempo Est.</span>
+<span class="text-label-md font-bold">45 min</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Vehicle Selection Chips (Simplified) -->
+<div class="flex flex-col gap-sm">
+<label class="text-label-md font-label-md text-on-surface-variant ml-xs uppercase">Categoría</label>
+<div class="flex gap-xs overflow-x-auto no-scrollbar pb-xs">
+<button class="flex-shrink-0 px-md py-sm bg-primary-container text-on-primary font-bold rounded-full text-label-md flex items-center gap-xs shadow-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">electric_car</span>
+                            Elite
+                        </button>
+<button class="flex-shrink-0 px-md py-sm bg-surface-container-highest border border-outline-variant text-on-surface font-semibold rounded-full text-label-md flex items-center gap-xs hover:bg-surface-bright transition-all">
+<span class="material-symbols-outlined">commute</span>
+                            Standard
+                        </button>
+<button class="flex-shrink-0 px-md py-sm bg-surface-container-highest border border-outline-variant text-on-surface font-semibold rounded-full text-label-md flex items-center gap-xs hover:bg-surface-bright transition-all">
+<span class="material-symbols-outlined">group</span>
+                            Large
+                        </button>
+</div>
+</div>
+<!-- Price and CTA -->
+<div class="mt-base pt-md border-t border-outline-variant/30 flex flex-col gap-md">
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<span class="text-label-md text-on-surface-variant">Precio Estimado</span>
+<span class="text-headline-md font-bold text-white">$1.850,00</span>
+</div>
+<div class="text-xs text-primary-fixed-dim bg-primary-container/10 px-sm py-1 rounded-lg border border-primary-container/20">
+                            -15% Cupón Aplicado
+                        </div>
+</div>
+<button class="w-full py-md bg-primary-container hover:bg-primary-fixed-dim text-black font-bold text-lg rounded-xl flex items-center justify-center gap-base neon-glow transition-all active:scale-95" id="requestBtn">
+<span>SOLICITAR VIAJE</span>
+<span class="material-symbols-outlined">trending_flat</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Floating Decorative Elements -->
+<div class="absolute right-margin-desktop top-[120px] hidden md:flex flex-col gap-sm pointer-events-none z-20">
+<div class="glass-panel p-md rounded-2xl flex flex-col items-center gap-xs animate-bounce" style="animation-duration: 3s;">
+<span class="material-symbols-outlined text-primary-fixed-dim text-4xl" style="font-variation-settings: 'FILL' 1;">speed</span>
+<span class="text-[10px] font-bold text-primary-fixed-dim tracking-widest uppercase">Alta Velocidad</span>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions
+        const requestBtn = document.getElementById('requestBtn');
+        requestBtn.addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <svg class="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>BUSCANDO CONDUCTOR...</span>
+                </div>
+            `;
+            this.classList.add('opacity-80', 'cursor-not-allowed');
+            this.disabled = true;
+
+            setTimeout(() => {
+                alert('¡Conductor encontrado! Un Tesla Model S llegará en 3 minutos.');
+                this.innerHTML = originalText;
+                this.classList.remove('opacity-80', 'cursor-not-allowed');
+                this.disabled = false;
+            }, 3000);
+        });
+
+        // Hover animation for trip details
+        document.querySelectorAll('.neon-border-focus').forEach(container => {
+            container.addEventListener('mouseenter', () => {
+                container.style.transform = 'translateX(4px)';
+                container.style.transition = 'all 0.3s ease';
+            });
+            container.addEventListener('mouseleave', () => {
+                container.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body></html>

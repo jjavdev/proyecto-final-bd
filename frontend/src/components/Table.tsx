@@ -5,7 +5,7 @@ interface Column {
 }
 
 export default function Table({ columns, data, emptyMsg = 'No hay datos' }: { columns: Column[]; data: any[]; emptyMsg?: string }) {
-  if (!data.length) return <p className="text-muted text-center py-4">{emptyMsg}</p>
+  if (!data.length) return <p className="text-on-surface-variant text-center py-4">{emptyMsg}</p>
 
   return (
     <div className="table-responsive">

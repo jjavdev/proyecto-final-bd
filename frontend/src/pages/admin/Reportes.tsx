@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
 import Table from '../../components/Table'
@@ -11,12 +11,29 @@ export default function Reportes() {
   const [pagos, setPagos] = useState<any[]>([])
   const [loadingG, setLoadingG] = useState(false)
   const [loadingP, setLoadingP] = useState(false)
+  const [choferes, setChoferes] = useState<any[]>([])
+
+  useEffect(() => {
+    api.get('/choferes/listar').then((r) => setChoferes(r.data)).catch(() => {})
+  }, [])
 
   async function consultarGanancias(e: React.FormEvent) {
     e.preventDefault()
     setLoadingG(true)
     try {
-      const r = await api.get('/reportes/ganancias', { params: { inicio, fin } })
+      const params: any = {}
+      if (inicio) params.inicio = inicio
+      if (fin) params.fin = fin
+      const r = await api.get('/reportes/ganancias', { params })
+      setGanancias(r.data)
+    } catch {} finally { setLoadingG(false) }
+  }
+
+  async function filtrarTodoGanancias() {
+    setLoadingG(true)
+    setInicio(''); setFin('')
+    try {
+      const r = await api.get('/reportes/ganancias')
       setGanancias(r.data)
     } catch {} finally { setLoadingG(false) }
   }
@@ -26,10 +43,25 @@ export default function Reportes() {
     if (!choferId) return
     setLoadingP(true)
     try {
-      const r = await api.get('/reportes/pagos-chofer', { params: { chofer_id: choferId, inicio, fin } })
+      const params: any = { chofer_id: choferId }
+      if (inicio) params.inicio = inicio
+      if (fin) params.fin = fin
+      const r = await api.get('/reportes/pagos-chofer', { params })
       setPagos(r.data)
     } catch {} finally { setLoadingP(false) }
   }
+
+  async function filtrarTodoPagos() {
+    if (!choferId) return
+    setLoadingP(true)
+    setInicio(''); setFin('')
+    try {
+      const r = await api.get('/reportes/pagos-chofer', { params: { chofer_id: choferId } })
+      setPagos(r.data)
+    } catch {} finally { setLoadingP(false) }
+  }
+
+  const seleccionado = choferes.find((c: any) => c.id === Number(choferId))
 
   const colG = [
     { key: 'dia', label: 'Fecha', render: (v: string) => new Date(v).toLocaleDateString() },
@@ -48,26 +80,44 @@ export default function Reportes() {
   return (
     <>
       <Card title="Reporte de Ganancias (Empresa)">
-        <form onSubmit={consultarGanancias} style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'end', flexWrap: 'wrap' }}>
-          <div><label style={{ fontSize: 12, display: 'block' }}>Inicio</label><input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} required style={s} /></div>
-          <div><label style={{ fontSize: 12, display: 'block' }}>Fin</label><input type="date" value={fin} onChange={(e) => setFin(e.target.value)} required style={s} /></div>
-          <button type="submit" style={btn}>{loadingG ? '...' : 'Consultar'}</button>
+        <form onSubmit={consultarGanancias} className="flex gap-3 mb-5 items-end flex-wrap">
+          <div><label className="text-xs text-on-surface-variant block mb-1">Inicio</label><input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" /></div>
+          <div><label className="text-xs text-on-surface-variant block mb-1">Fin</label><input type="date" value={fin} onChange={(e) => setFin(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" /></div>
+          <button type="submit" disabled={loadingG} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">{loadingG ? '...' : 'Consultar'}</button>
+          <button type="button" onClick={filtrarTodoGanancias} disabled={loadingG} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">Filtrar Todo</button>
         </form>
-        <Table columns={colG} data={ganancias} emptyMsg="Selecciona un período y consulta" />
+        {loadingG && !ganancias.length ? (
+          <div className="flex items-center justify-center py-8"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
+        ) : (
+          <Table columns={colG} data={ganancias} emptyMsg="Selecciona un período y consulta" />
+        )}
       </Card>
 
       <Card title="Reporte de Pagos a Chofer">
-        <form onSubmit={consultarPagos} style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'end', flexWrap: 'wrap' }}>
-          <div><label style={{ fontSize: 12, display: 'block' }}>ID Chofer</label><input placeholder="ID" type="number" value={choferId} onChange={(e) => setChoferId(e.target.value)} required style={{ ...s, width: 80 }} /></div>
-          <div><label style={{ fontSize: 12, display: 'block' }}>Inicio</label><input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} required style={s} /></div>
-          <div><label style={{ fontSize: 12, display: 'block' }}>Fin</label><input type="date" value={fin} onChange={(e) => setFin(e.target.value)} required style={s} /></div>
-          <button type="submit" style={btn}>{loadingP ? '...' : 'Consultar'}</button>
+        <form onSubmit={consultarPagos} className="flex gap-3 mb-5 items-end flex-wrap">
+          <div>
+            <label className="text-xs text-on-surface-variant block mb-1">Chofer</label>
+            <select value={choferId} onChange={(e) => { setChoferId(e.target.value); setPagos([]) }} required className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all min-w-[200px]">
+              <option value="">Seleccionar Chofer</option>
+              {choferes.map((c: any) => (
+                <option key={c.id} value={c.id}>{c.nombre} {c.apellido} — {c.cedula}</option>
+              ))}
+            </select>
+          </div>
+          <div><label className="text-xs text-on-surface-variant block mb-1">Inicio</label><input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" /></div>
+          <div><label className="text-xs text-on-surface-variant block mb-1">Fin</label><input type="date" value={fin} onChange={(e) => setFin(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" /></div>
+          <button type="submit" disabled={loadingP || !choferId} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">{loadingP ? '...' : 'Consultar'}</button>
+          <button type="button" onClick={filtrarTodoPagos} disabled={loadingP || !choferId} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">Filtrar Todo</button>
         </form>
-        <Table columns={colP} data={pagos} emptyMsg="Selecciona un chofer y período" />
+        {seleccionado && (
+          <p className="text-xs text-on-surface-variant mb-3">Banco: {seleccionado.banco || 'N/A'} | Cuenta: {seleccionado.nro_cuenta || 'N/A'}</p>
+        )}
+        {loadingP && !pagos.length ? (
+          <div className="flex items-center justify-center py-8"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
+        ) : (
+          <Table columns={colP} data={pagos} emptyMsg="Selecciona un chofer y consulta" />
+        )}
       </Card>
     </>
   )
 }
-
-const s: React.CSSProperties = { padding: '10px 12px', border: '1px solid #ddd', borderRadius: 6, fontSize: 14 }
-const btn: React.CSSProperties = { padding: '10px 12px', border: 'none', borderRadius: 6, background: '#1a1a2e', color: '#fff', fontSize: 14, cursor: 'pointer' }

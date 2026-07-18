@@ -179,6 +179,7 @@ model Traslado {
 
   cliente Cliente @relation(fields: [cliente_id], references: [id])
   chofer  Chofer  @relation(fields: [chofer_id], references: [id])
+  calificaciones Calificacion[]
 }
 
 // Pago realizado por personal administrativo a un chofer.
@@ -203,6 +204,24 @@ model Banco {
 
   choferes  Chofer[]
   recargas  RecargaSaldo[]
+}
+
+// Calificacion entre cliente y chofer despues de un viaje completado.
+// Cada parte puede calificar una sola vez por traslado.
+// puntuacion: 1-5 (estrellas). comentario: opcional.
+model Calificacion {
+  @@map("calificaciones")
+  id              Int      @id @default(autoincrement())
+  traslado_id     Int
+  quien_califica  String   @default("CLIENTE") // CLIENTE o CHOFER
+  calificado_id   Int      // usuario_id del calificado
+  puntuacion      Int
+  comentario      String?
+  creado_en       DateTime @default(now())
+
+  traslado Traslado @relation(fields: [traslado_id], references: [id])
+
+  @@unique([traslado_id, quien_califica])
 }
 
 // Personal administrativo que gestiona evaluaciones, revisiones y pagos.

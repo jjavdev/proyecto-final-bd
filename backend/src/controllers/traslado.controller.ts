@@ -59,7 +59,7 @@ export async function solicitarTraslado(req: AuthRequest, res: Response) {
       UPDATE clientes SET saldo = saldo - ${costo} WHERE id = ${cliente.id}
     `,
     prisma.$executeRaw`
-      UPDATE choferes SET saldo_pendiente = saldo_pendiente + ${costo * 0.70} WHERE id = ${chofer_id}
+      UPDATE choferes SET saldo_pendiente = saldo_pendiente + ${Math.round(costo * 70) / 100} WHERE id = ${chofer_id}
     `
   ])
 
@@ -133,7 +133,7 @@ export async function cancelarTraslado(req: AuthRequest, res: Response) {
   await prisma.$transaction([
     prisma.$executeRaw`UPDATE traslados SET estado = 'cancelado' WHERE id = ${Number(id)}`,
     prisma.$executeRaw`UPDATE clientes SET saldo = saldo + ${traslado.costo} WHERE id = ${traslado.cliente_id}`,
-    prisma.$executeRaw`UPDATE choferes SET saldo_pendiente = saldo_pendiente - ${traslado.costo * 0.70} WHERE id = ${traslado.chofer_id}`,
+    prisma.$executeRaw`UPDATE choferes SET saldo_pendiente = saldo_pendiente - ${Math.round(traslado.costo * 70) / 100} WHERE id = ${traslado.chofer_id}`,
   ])
 
   res.json({ mensaje: 'Traslado cancelado y saldo reembolsado' })

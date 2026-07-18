@@ -7,7 +7,7 @@ export default function HistorialViajes() {
   const [inicio, setInicio] = useState('')
   const [fin, setFin] = useState('')
   const [estado, setEstado] = useState('')
-  const [viajes, setViajes] = useState([])
+  const [viajes, setViajes] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -36,30 +36,35 @@ export default function HistorialViajes() {
 
   return (
     <Card title="Historial de Viajes">
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'end', flexWrap: 'wrap' }}>
+      <form onSubmit={handleSubmit} className="flex gap-3 mb-5 items-end flex-wrap">
         <div>
-          <label style={{ fontSize: 12, display: 'block' }}>Inicio</label>
-          <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} style={s} />
+          <label className="text-xs text-on-surface-variant block mb-1">Inicio</label>
+          <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
         </div>
         <div>
-          <label style={{ fontSize: 12, display: 'block' }}>Fin</label>
-          <input type="date" value={fin} onChange={(e) => setFin(e.target.value)} style={s} />
+          <label className="text-xs text-on-surface-variant block mb-1">Fin</label>
+          <input type="date" value={fin} onChange={(e) => setFin(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
         </div>
         <div>
-          <label style={{ fontSize: 12, display: 'block' }}>Estado</label>
-          <select value={estado} onChange={(e) => setEstado(e.target.value)} style={s}>
+          <label className="text-xs text-on-surface-variant block mb-1">Estado</label>
+          <select value={estado} onChange={(e) => setEstado(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all">
             <option value="">Todos</option>
             <option value="pendiente">Pendiente</option>
             <option value="completado">Completado</option>
             <option value="cancelado">Cancelado</option>
           </select>
         </div>
-        <button type="submit" style={btn} disabled={loading}>{loading ? '...' : 'Filtrar'}</button>
+        <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">
+          {loading ? '...' : 'Filtrar'}
+        </button>
       </form>
-      <Table columns={columns} data={viajes} emptyMsg="No has realizado viajes aún" />
+      {loading && !viajes.length ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <Table columns={columns} data={viajes} emptyMsg="No has realizado viajes aún" />
+      )}
     </Card>
   )
 }
-
-const s: React.CSSProperties = { padding: '10px 12px', border: '1px solid #ddd', borderRadius: 6, fontSize: 14 }
-const btn: React.CSSProperties = { padding: '10px 12px', border: 'none', borderRadius: 6, background: '#1a1a2e', color: '#fff', fontSize: 14, cursor: 'pointer' }

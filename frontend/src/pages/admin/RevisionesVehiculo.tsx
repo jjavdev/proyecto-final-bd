@@ -19,25 +19,30 @@ export default function RevisionesVehiculo() {
 
   const columns = [
     { key: 'id', label: 'ID' },
-    { key: 'calificacion', label: 'Calificacion' },
-    { key: 'apto', label: 'Apto', render: (v: boolean) => v ? 'Si' : 'No' },
+    { key: 'calificacion', label: 'Calificación' },
+    { key: 'apto', label: 'Apto', render: (v: boolean) => v ? 'Sí' : 'No' },
     { key: 'fecha', label: 'Fecha', render: (v: string) => new Date(v).toLocaleDateString() },
     { key: 'evaluador_nombre', label: 'Evaluador' },
   ]
 
   return (
-    <Card title="Historial de Revisiones del Vehiculo">
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'end' }}>
+    <Card title="Historial de Revisiones del Vehículo">
+      <form onSubmit={handleSubmit} className="flex gap-3 mb-5 items-end flex-wrap">
         <div>
-          <label style={{ fontSize: 12, display: 'block' }}>ID del Vehiculo</label>
-          <input type="number" value={vehiculoId} onChange={(e) => setVehiculoId(e.target.value)} required style={s} />
+          <label className="text-xs text-on-surface-variant block mb-1">ID del Vehículo</label>
+          <input type="number" value={vehiculoId} onChange={(e) => setVehiculoId(e.target.value)} required className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
         </div>
-        <button type="submit" style={btn} disabled={loading}>{loading ? '...' : 'Consultar'}</button>
+        <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">
+          {loading ? '...' : 'Consultar'}
+        </button>
       </form>
-      <Table columns={columns} data={data} emptyMsg="No hay revisiones registradas" />
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <Table columns={columns} data={data} emptyMsg="No hay revisiones registradas" />
+      )}
     </Card>
   )
 }
-
-const s: React.CSSProperties = { padding: '10px 12px', border: '1px solid #ddd', borderRadius: 6, fontSize: 14 }
-const btn: React.CSSProperties = { padding: '10px 12px', border: 'none', borderRadius: 6, background: '#1a1a2e', color: '#fff', fontSize: 14, cursor: 'pointer' }

@@ -9,6 +9,7 @@ export default function ViajesAsignados() {
   const [estado, setEstado] = useState('')
   const [viajes, setViajes] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
+  const [actionLoading, setActionLoading] = useState<number | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -25,10 +26,11 @@ export default function ViajesAsignados() {
 
   async function completar(id: number) {
     if (!confirm('¿Completar este viaje?')) return
+    setActionLoading(id)
     try {
       await api.put(`/traslados/${id}/completar`)
       setViajes(viajes.map((v: any) => v.id === id ? { ...v, estado: 'completado' } : v))
-    } catch {}
+    } catch {} finally { setActionLoading(null) }
   }
 
   const columns = [
@@ -41,39 +43,44 @@ export default function ViajesAsignados() {
     { key: 'cliente_nombre', label: 'Cliente', render: (_: any, row: any) => `${row.cliente_nombre} ${row.cliente_apellido}` },
     {
       key: 'accion', label: 'Acción',
-      render: (_: any, row: any) => row.estado === 'pendiente' ? (
-        <button onClick={() => completar(row.id)} style={btnSm}>Completar</button>
-      ) : null,
+      render: (_: any, row: any) => {
+        const isLoading = actionLoading === row.id
+        return row.estado === 'pendiente' ? (
+          <button onClick={() => completar(row.id)} disabled={isLoading} className="px-3 py-1.5 rounded-md bg-primary text-xs font-bold text-surface hover:brightness-110 transition-all disabled:opacity-50">
+            {isLoading ? '...' : 'Completar'}
+          </button>
+        ) : row.estado === 'completado' ? (
+          <span className="text-on-surface-variant italic text-sm">Completado</span>
+        ) : null
+      },
     },
   ]
 
   return (
     <Card title="Mis Viajes">
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'end', flexWrap: 'wrap' }}>
+      <form onSubmit={handleSubmit} className="flex gap-3 mb-5 items-end flex-wrap">
         <div>
-          <label style={{ fontSize: 12, display: 'block' }}>Inicio</label>
-          <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} style={s} />
+          <label className="text-xs text-on-surface-variant block mb-1">Inicio</label>
+          <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
         </div>
         <div>
-          <label style={{ fontSize: 12, display: 'block' }}>Fin</label>
-          <input type="date" value={fin} onChange={(e) => setFin(e.target.value)} style={s} />
+          <label className="text-xs text-on-surface-variant block mb-1">Fin</label>
+          <input type="date" value={fin} onChange={(e) => setFin(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
         </div>
         <div>
-          <label style={{ fontSize: 12, display: 'block' }}>Estado</label>
-          <select value={estado} onChange={(e) => setEstado(e.target.value)} style={s}>
+          <label className="text-xs text-on-surface-variant block mb-1">Estado</label>
+          <select value={estado} onChange={(e) => setEstado(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all">
             <option value="">Todos</option>
             <option value="pendiente">Pendiente</option>
             <option value="completado">Completado</option>
             <option value="cancelado">Cancelado</option>
           </select>
         </div>
-        <button type="submit" style={btn} disabled={loading}>{loading ? '...' : 'Filtrar'}</button>
+        <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">
+          {loading ? '...' : 'Filtrar'}
+        </button>
       </form>
       <Table columns={columns} data={viajes} emptyMsg="No hay viajes para los filtros seleccionados" />
     </Card>
   )
 }
-
-const s: React.CSSProperties = { padding: '10px 12px', border: '1px solid #ddd', borderRadius: 6, fontSize: 14 }
-const btn: React.CSSProperties = { padding: '10px 12px', border: 'none', borderRadius: 6, background: '#1a1a2e', color: '#fff', fontSize: 14, cursor: 'pointer' }
-const btnSm: React.CSSProperties = { padding: '6px 10px', border: 'none', borderRadius: 4, background: '#4ecca3', color: '#fff', fontSize: 12, cursor: 'pointer' }

@@ -10,6 +10,8 @@ import RecargarSaldo from './cliente/RecargarSaldo'
 import SolicitarViaje from './cliente/SolicitarViaje'
 import HistorialViajes from './cliente/HistorialViajes'
 import HistorialRecargas from './cliente/HistorialRecargas'
+import CalificarViaje from './CalificarViaje'
+import MisCalificaciones from './MisCalificaciones'
 
 import Vehiculos from './chofer/Vehiculos'
 import Contactos from './chofer/Contactos'
@@ -43,6 +45,8 @@ export default function Dashboard() {
             <Route path="solicitar-viaje" element={<SolicitarViaje />} />
             <Route path="historial-viajes" element={<HistorialViajes />} />
             <Route path="historial-recargas" element={<HistorialRecargas />} />
+            <Route path="calificar" element={<CalificarViaje />} />
+            <Route path="mis-calificaciones" element={<MisCalificaciones />} />
           </>
         )}
 
@@ -52,6 +56,8 @@ export default function Dashboard() {
             <Route path="contactos" element={<Contactos />} />
             <Route path="banco" element={<DatosBancarios />} />
             <Route path="viajes" element={<ViajesAsignados />} />
+            <Route path="calificar" element={<CalificarViaje />} />
+            <Route path="mis-calificaciones" element={<MisCalificaciones />} />
           </>
         )}
 

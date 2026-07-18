@@ -9,7 +9,9 @@ export function validate(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body)
     if (!result.success) {
-      return res.status(400).json({ error: result.error.flatten().fieldErrors })
+      const flat = result.error.flatten()
+      const msgs = Object.values(flat.fieldErrors).flat().concat(flat.formErrors)
+      return res.status(400).json({ error: msgs.length ? msgs.join('. ') : 'Datos inválidos' })
     }
     req.body = result.data
     next()
