@@ -3,6 +3,13 @@ import api from '../services/api'
 import Card from '../components/Card'
 import StarRating from '../components/StarRating'
 import { useAuth } from '../context/AuthContext'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
+import Paper from '@mui/material/Paper'
 
 export default function CalificarViaje() {
   const { usuario } = useAuth()
@@ -50,50 +57,58 @@ export default function CalificarViaje() {
 
   return (
     <Card title={esCliente ? 'Calificar a mi Chofer' : 'Calificar al Cliente'}>
-      {msg && <p className="text-primary text-sm text-center mb-4 py-2.5 px-4 bg-primary/10 border border-primary/30 rounded-md">{msg}</p>}
-      {error && <p className="text-error text-sm text-center mb-4 py-2.5 px-4 bg-error/10 border border-error/30 rounded-md">{error}</p>}
+      {msg && <Alert severity="success" sx={{ mb: 2, borderRadius: 1 }}>{msg}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 1 }}>{error}</Alert>}
 
       {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress />
+        </Box>
       ) : pendientes.length === 0 ? (
-        <p className="text-center text-on-surface-variant py-8">No tienes viajes pendientes por calificar</p>
+        <Typography variant="body2" sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
+          No tienes viajes pendientes por calificar
+        </Typography>
       ) : (
-        <div className="space-y-4">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {pendientes.map((v: any) => (
-            <div key={v.id} className="bg-surface-container border border-outline rounded-xl p-4">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <p className="text-sm font-medium text-on-surface">
+            <Paper key={v.id} variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
                     {v.origen} → {v.destino}
-                  </p>
-                  <p className="text-xs text-on-surface-variant/60">
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', opacity: 0.6 }}>
                     {v[nombreCampo]} {v[apellidoCampo]} · ${Number(v.costo).toFixed(2)} · {new Date(v.fecha).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 mb-2">
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
                 <StarRating value={puntajes[v.id] || 0} onChange={(val) => setPuntajes({ ...puntajes, [v.id]: val })} />
-                <span className="text-xs text-on-surface-variant/50">{puntajes[v.id] ? `${puntajes[v.id]}/5` : ''}</span>
-              </div>
-              <input
+                <Typography variant="caption" sx={{ color: 'text.secondary', opacity: 0.5 }}>
+                  {puntajes[v.id] ? `${puntajes[v.id]}/5` : ''}
+                </Typography>
+              </Box>
+              <TextField
                 placeholder="Comentario (opcional)"
                 value={comentarios[v.id] || ''}
-                maxLength={200}
                 onChange={(e) => setComentarios({ ...comentarios, [v.id]: e.target.value })}
-                className="w-full px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all mb-3"
+                size="small"
+                fullWidth
+                sx={{ mb: 1.5 }}
+                slotProps={{ htmlInput: { maxLength: 200 } }}
               />
-              <button
+              <Button
                 onClick={() => handleCalificar(v.id)}
                 disabled={enviando === v.id}
-                className="px-4 py-2 rounded-lg bg-primary text-surface text-sm font-bold hover:brightness-110 transition-all disabled:opacity-50"
+                variant="contained"
+                color="primary"
+                size="small"
               >
                 {enviando === v.id ? 'ENVIANDO...' : 'Enviar Calificación'}
-              </button>
-            </div>
+              </Button>
+            </Paper>
           ))}
-        </div>
+        </Box>
       )}
     </Card>
   )

@@ -1,6 +1,12 @@
 import { useState, useEffect, FormEvent } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
 
 export default function BancoChofer() {
   const [choferId, setChoferId] = useState('')
@@ -36,31 +42,48 @@ export default function BancoChofer() {
     }
   }
 
-  function soloDigitos(e: React.ChangeEvent<HTMLInputElement>) {
-    setNroCuenta(e.target.value.replace(/\D/g, ''))
-  }
-
   return (
     <Card title="Asignar Banco a Chofer">
-      {msg && <p className="text-primary text-sm text-center mb-4 py-2.5 px-4 bg-primary/10 border border-primary/30 rounded-md">{msg}</p>}
-      {error && <p className="text-error text-sm text-center mb-4 py-2.5 px-4 bg-error/10 border border-error/30 rounded-md">{error}</p>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-[400px]">
-        <select value={choferId} onChange={(e) => setChoferId(e.target.value)} required className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all">
-          <option value="">Seleccionar Chofer</option>
+      {msg && <Alert severity="success" sx={{ mb: 2, borderRadius: 1 }}>{msg}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 1 }}>{error}</Alert>}
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxWidth: 400 }}>
+        <TextField
+          select
+          label="Seleccionar Chofer"
+          value={choferId}
+          onChange={(e) => setChoferId(e.target.value)}
+          required
+          size="small"
+        >
+          <MenuItem value="">Seleccionar Chofer</MenuItem>
           {choferes.map((c: any) => (
-            <option key={c.id} value={c.id}>{c.nombre} {c.apellido} — {c.cedula}</option>
+            <MenuItem key={c.id} value={c.id}>{c.nombre} {c.apellido} — {c.cedula}</MenuItem>
           ))}
-        </select>
-        <select value={bancoId} onChange={(e) => setBancoId(e.target.value)} required className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all">
-          <option value="">Seleccionar Banco</option>
-          {bancos.map((b) => <option key={b.id} value={b.id}>{b.nombre}</option>)}
-        </select>
-        <input placeholder="Número de Cuenta (solo dígitos)" value={nroCuenta} maxLength={30} onChange={soloDigitos} required className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-        <button type="submit" className="w-full py-2.5 rounded-lg font-headline font-bold text-sm tracking-widest uppercase text-surface bg-gradient-to-r from-primary to-[#2be088] hover:from-[#2be088] hover:to-primary transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/40 flex items-center justify-center gap-2 disabled:opacity-60" disabled={loading}>
-          {loading && <span className="w-4 h-4 border-2 border-surface border-t-transparent rounded-full animate-spin" />}
+        </TextField>
+        <TextField
+          select
+          label="Seleccionar Banco"
+          value={bancoId}
+          onChange={(e) => setBancoId(e.target.value)}
+          required
+          size="small"
+        >
+          <MenuItem value="">Seleccionar Banco</MenuItem>
+          {bancos.map((b) => <MenuItem key={b.id} value={b.id}>{b.nombre}</MenuItem>)}
+        </TextField>
+        <TextField
+          label="Número de Cuenta (solo dígitos)"
+          value={nroCuenta}
+          onChange={(e) => setNroCuenta(e.target.value.replace(/\D/g, ''))}
+          required
+          size="small"
+          slotProps={{ htmlInput: { maxLength: 30 } }}
+        />
+        <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ py: 1.5, gap: 1 }}>
+          {loading && <CircularProgress size={14} />}
           {loading ? 'GUARDANDO...' : 'Guardar'}
-        </button>
-      </form>
+        </Button>
+      </Box>
     </Card>
   )
 }

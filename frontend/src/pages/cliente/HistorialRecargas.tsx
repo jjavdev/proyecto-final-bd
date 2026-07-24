@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
 import Table from '../../components/Table'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 
 export default function HistorialRecargas() {
   const [recargas, setRecargas] = useState<any[]>([])
@@ -22,9 +24,9 @@ export default function HistorialRecargas() {
   return (
     <Card title="Historial de Recargas">
       {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress size={24} />
+        </Box>
       ) : (
         <Table columns={columns} data={recargas} emptyMsg="No has realizado recargas aún" />
       )}

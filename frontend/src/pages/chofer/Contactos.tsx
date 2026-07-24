@@ -1,6 +1,12 @@
 import { useState, FormEvent } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
 
 export default function Contactos() {
   const [contactos, setContactos] = useState([{ nombre: '', telefono: '', parentesco: '' }])
@@ -34,25 +40,29 @@ export default function Contactos() {
 
   return (
     <Card title="Contactos de Emergencia (mínimo 2)">
-      {msg && <p className="text-primary text-sm text-center mb-4 py-2.5 px-4 bg-primary/10 border border-primary/30 rounded-md">{msg}</p>}
-      {error && <p className="text-error text-sm text-center mb-4 py-2.5 px-4 bg-error/10 border border-error/30 rounded-md">{error}</p>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-[600px]">
+      {msg && <Alert severity="success" sx={{ mb: 2, borderRadius: 1 }}>{msg}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 1 }}>{error}</Alert>}
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxWidth: 600 }}>
         {contactos.map((c, i) => (
-          <div key={i} className="flex gap-2 items-center">
-            <span className="font-bold text-on-surface-variant min-w-[20px] text-sm">{i + 1}.</span>
-            <input placeholder="Nombre" value={c.nombre} onChange={(e) => update(i, 'nombre', e.target.value)} required className="flex-1 px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-            <input placeholder="Teléfono" value={c.telefono} onChange={(e) => update(i, 'telefono', e.target.value.replace(/\D/g, ''))} required className="flex-1 px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-            <input placeholder="Parentesco" value={c.parentesco} onChange={(e) => update(i, 'parentesco', e.target.value)} required className="flex-1 px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-          </div>
+          <Box key={i} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.secondary', minWidth: 20 }}>
+              {i + 1}.
+            </Typography>
+            <TextField placeholder="Nombre" value={c.nombre} onChange={(e) => update(i, 'nombre', e.target.value)} required size="small" sx={{ flex: 1 }} />
+            <TextField placeholder="Teléfono" value={c.telefono} onChange={(e) => update(i, 'telefono', e.target.value.replace(/\D/g, ''))} required size="small" sx={{ flex: 1 }} />
+            <TextField placeholder="Parentesco" value={c.parentesco} onChange={(e) => update(i, 'parentesco', e.target.value)} required size="small" sx={{ flex: 1 }} />
+          </Box>
         ))}
-        <div className="flex gap-2">
-          <button type="button" onClick={addContacto} disabled={contactos.length >= 5} className="px-4 py-2 rounded-lg bg-surface border border-outline text-on-surface text-sm hover:bg-surface-container transition-all disabled:opacity-50">+ Agregar Contacto</button>
-          <button type="submit" className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all flex items-center gap-2 disabled:opacity-50" disabled={loading}>
-            {loading && <span className="w-4 h-4 border-2 border-on-surface border-t-transparent rounded-full animate-spin" />}
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" onClick={addContacto} disabled={contactos.length >= 5}>
+            + Agregar Contacto
+          </Button>
+          <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ gap: 1 }}>
+            {loading && <CircularProgress size={14} />}
             {loading ? 'GUARDANDO...' : 'Guardar Contactos'}
-          </button>
-        </div>
-      </form>
+          </Button>
+        </Box>
+      </Box>
     </Card>
   )
 }

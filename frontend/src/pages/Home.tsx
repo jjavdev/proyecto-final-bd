@@ -1,6 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid2'
+import Typography from '@mui/material/Typography'
+import Paper from '@mui/material/Paper'
+import Chip from '@mui/material/Chip'
+import CircularProgress from '@mui/material/CircularProgress'
+import TableContainer from '@mui/material/TableContainer'
+import Table from '@mui/material/Table'
+import TableHead from '@mui/material/TableHead'
+import TableBody from '@mui/material/TableBody'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
 
 export default function Home() {
   const { usuario } = useAuth()
@@ -91,149 +103,56 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="font-headline text-headline-lg text-on-surface mb-2">
+    <Box>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
           Bienvenido, {usuario?.nombre}
-        </h1>
-        <p className="text-on-surface-variant font-body">
+        </Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           Panel de <strong>{rolNames[rol] || rol}</strong>
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
       {data.loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
+          <CircularProgress />
+        </Box>
       ) : data.error ? (
-        <p className="text-error">Error al cargar datos</p>
+        <Typography color="error">Error al cargar datos</Typography>
       ) : (
         <>
-          {/* ADMIN + PERSONAL_ADMIN dashboard */}
           {(rol === 'ADMIN' || rol === 'PERSONAL_ADMIN') && <AdminDashboard data={data} />}
-
-          {/* CHOFER dashboard */}
           {rol === 'CHOFER' && <ChoferDashboard data={data} />}
-
-          {/* CLIENTE dashboard */}
           {rol === 'CLIENTE' && <ClienteDashboard data={data} />}
         </>
       )}
-    </div>
+    </Box>
   )
 }
 
 function StatCard({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="bg-surface-container border border-outline rounded-xl p-5">
-      <p className="text-xs font-semibold tracking-[0.08em] uppercase text-on-surface-variant mb-1.5">{label}</p>
-      <p className={`font-headline text-3xl font-bold ${accent ? 'text-primary' : 'text-on-surface'}`}>{value}</p>
-    </div>
+    <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
+      <Typography variant="overline" sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}>
+        {label}
+      </Typography>
+      <Typography
+        variant="h4"
+        sx={{
+          fontFamily: 'Sora, sans-serif',
+          fontWeight: 700,
+          color: accent ? 'primary.main' : 'text.primary',
+        }}
+      >
+        {value}
+      </Typography>
+    </Paper>
   )
 }
 
-function AdminDashboard({ data }: { data: any }) {
-  return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Traslados" value={String(data.totalTraslados)} />
-        <StatCard label="Completados" value={String(data.completados)} accent />
-        <StatCard label="Pendientes" value={String(data.pendientes)} />
-        <StatCard label="Cancelados" value={String(data.cancelados)} />
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <StatCard label="Choferes" value={String(data.totalChoferes)} />
-        <StatCard label="Choferes activos" value={String(data.choferesActivos)} accent />
-        <StatCard label="Total viajes" value={String(data.totalViajes)} />
-        <StatCard label="Bruto total" value={`$${Number(data.totalBruto).toFixed(2)}`} />
-        <StatCard label="Ganancia (30%)" value={`$${Number(data.gananciaTotal).toFixed(2)}`} accent />
-      </div>
-
-      <RecentTable
-        title="Últimos Traslados"
-        data={data.ultimosTraslados}
-        columns={[
-          { key: 'origen', label: 'Origen' },
-          { key: 'destino', label: 'Destino' },
-          { key: 'costo', label: 'Costo', render: (v: any) => `$${Number(v).toFixed(2)}` },
-          {
-            key: 'estado', label: 'Estado',
-            render: (v: any) => (
-              <span className={`status-badge ${v === 'completado' ? 'status-completado' : v === 'pendiente' ? 'status-pendiente' : 'status-cancelado'}`}>
-                {v}
-              </span>
-            ),
-          },
-        ]}
-      />
-    </div>
-  )
-}
-
-function ChoferDashboard({ data }: { data: any }) {
-  return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Por cobrar" value={`$${Math.max(0, Number(data.stats?.saldo_pendiente)).toFixed(2)}`} />
-        <StatCard label="Cobrado" value={`$${Number(data.stats?.saldo_pagado).toFixed(2)}`} accent />
-        <StatCard label="Viajes pendientes" value={String(data.pendientes)} />
-        <StatCard label="Completados" value={String(data.completados)} accent />
-        <StatCard label="Vehículos" value={String(data.totalVehiculos)} />
-      </div>
-
-      <RecentTable
-        title="Últimos Viajes Asignados"
-        data={data.ultimosViajes}
-        columns={[
-          { key: 'origen', label: 'Origen' },
-          { key: 'destino', label: 'Destino' },
-          { key: 'costo', label: 'Costo', render: (v: any) => `$${Number(v).toFixed(2)}` },
-          {
-            key: 'estado', label: 'Estado',
-            render: (v: any) => (
-              <span className={`status-badge ${v === 'completado' ? 'status-completado' : v === 'pendiente' ? 'status-pendiente' : 'status-cancelado'}`}>
-                {v}
-              </span>
-            ),
-          },
-        ]}
-      />
-    </div>
-  )
-}
-
-function ClienteDashboard({ data }: { data: any }) {
-  return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="bg-surface-container border border-outline rounded-xl p-5 md:col-span-2">
-          <p className="text-xs font-semibold tracking-[0.08em] uppercase text-on-surface-variant mb-1.5">Saldo disponible</p>
-          <p className="font-headline text-4xl font-bold text-primary">${Number(data.saldo).toFixed(2)}</p>
-        </div>
-        <StatCard label="Viajes realizados" value={String(data.totalViajes)} />
-        <StatCard label="Recargas" value={String(data.totalRecargas)} accent />
-      </div>
-
-      <RecentTable
-        title="Últimos Viajes"
-        data={data.ultimosViajes}
-        columns={[
-          { key: 'origen', label: 'Origen' },
-          { key: 'destino', label: 'Destino' },
-          { key: 'costo', label: 'Costo', render: (v: any) => `$${Number(v).toFixed(2)}` },
-          {
-            key: 'estado', label: 'Estado',
-            render: (v: any) => (
-              <span className={`status-badge ${v === 'completado' ? 'status-completado' : v === 'pendiente' ? 'status-pendiente' : 'status-cancelado'}`}>
-                {v}
-              </span>
-            ),
-          },
-        ]}
-      />
-    </div>
-  )
+function StatusChip({ estado }: { estado: string }) {
+  const color = estado === 'completado' ? 'primary' as const : estado === 'pendiente' ? 'warning' as const : 'error' as const
+  return <Chip label={estado} color={color} size="small" variant="outlined" />
 }
 
 function RecentTable({ title, data, columns }: {
@@ -244,32 +163,137 @@ function RecentTable({ title, data, columns }: {
   if (!data?.length) return null
 
   return (
-    <div>
-      <h3 className="font-headline text-headline-md font-semibold mb-4">{title}</h3>
-      <div className="border border-outline rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-surface-container-high">
+    <Box>
+      <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
+        {title}
+      </Typography>
+      <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
               {columns.map((col) => (
-                <th key={col.key} className="text-left px-4 py-3 font-body text-xs font-semibold tracking-[0.08em] uppercase text-on-surface-variant">
+                <TableCell
+                  key={col.key}
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: 'text.secondary',
+                    bgcolor: 'action.hover',
+                  }}
+                >
                   {col.label}
-                </th>
+                </TableCell>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {data.map((row: any, i: number) => (
-              <tr key={row.id || i} className="border-t border-outline/50 hover:bg-white/[0.02]">
+              <TableRow key={row.id || i} sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
                 {columns.map((col) => (
-                  <td key={col.key} className="px-4 py-3 text-on-surface">
+                  <TableCell key={col.key} sx={{ color: 'text.primary' }}>
                     {col.render ? col.render(row[col.key], row) : row[col.key]}
-                  </td>
+                  </TableCell>
                 ))}
-              </tr>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  )
+}
+
+function AdminDashboard({ data }: { data: any }) {
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 6, md: 3 }}><StatCard label="Traslados" value={String(data.totalTraslados)} /></Grid>
+        <Grid size={{ xs: 6, md: 3 }}><StatCard label="Completados" value={String(data.completados)} accent /></Grid>
+        <Grid size={{ xs: 6, md: 3 }}><StatCard label="Pendientes" value={String(data.pendientes)} /></Grid>
+        <Grid size={{ xs: 6, md: 3 }}><StatCard label="Cancelados" value={String(data.cancelados)} /></Grid>
+        <Grid size={{ xs: 6, md: 4 }}><StatCard label="Choferes" value={String(data.totalChoferes)} /></Grid>
+        <Grid size={{ xs: 6, md: 4 }}><StatCard label="Choferes activos" value={String(data.choferesActivos)} accent /></Grid>
+        <Grid size={{ xs: 6, md: 4 }}><StatCard label="Total viajes" value={String(data.totalViajes)} /></Grid>
+        <Grid size={{ xs: 6, md: 6 }}><StatCard label="Bruto total" value={`$${Number(data.totalBruto).toFixed(2)}`} /></Grid>
+        <Grid size={{ xs: 6, md: 6 }}><StatCard label="Ganancia (30%)" value={`$${Number(data.gananciaTotal).toFixed(2)}`} accent /></Grid>
+      </Grid>
+
+      <RecentTable
+        title="Últimos Traslados"
+        data={data.ultimosTraslados}
+        columns={[
+          { key: 'origen', label: 'Origen' },
+          { key: 'destino', label: 'Destino' },
+          { key: 'costo', label: 'Costo', render: (v: any) => `$${Number(v).toFixed(2)}` },
+          { key: 'estado', label: 'Estado', render: (v: any) => <StatusChip estado={v} /> },
+        ]}
+      />
+    </Box>
+  )
+}
+
+function ChoferDashboard({ data }: { data: any }) {
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 6, md: 4 }}>
+          <StatCard label="Por cobrar" value={`$${Math.max(0, Number(data.stats?.saldo_pendiente)).toFixed(2)}`} />
+        </Grid>
+        <Grid size={{ xs: 6, md: 4 }}>
+          <StatCard label="Cobrado" value={`$${Number(data.stats?.saldo_pagado).toFixed(2)}`} accent />
+        </Grid>
+        <Grid size={{ xs: 6, md: 4 }}><StatCard label="Viajes pendientes" value={String(data.pendientes)} /></Grid>
+        <Grid size={{ xs: 6, md: 6 }}><StatCard label="Completados" value={String(data.completados)} accent /></Grid>
+        <Grid size={{ xs: 6, md: 6 }}><StatCard label="Vehículos" value={String(data.totalVehiculos)} /></Grid>
+      </Grid>
+
+      <RecentTable
+        title="Últimos Viajes Asignados"
+        data={data.ultimosViajes}
+        columns={[
+          { key: 'origen', label: 'Origen' },
+          { key: 'destino', label: 'Destino' },
+          { key: 'costo', label: 'Costo', render: (v: any) => `$${Number(v).toFixed(2)}` },
+          { key: 'estado', label: 'Estado', render: (v: any) => <StatusChip estado={v} /> },
+        ]}
+      />
+    </Box>
+  )
+}
+
+function ClienteDashboard({ data }: { data: any }) {
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
+            <Typography variant="overline" sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}>
+              Saldo disponible
+            </Typography>
+            <Typography
+              variant="h3"
+              sx={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, color: 'primary.main' }}
+            >
+              ${Number(data.saldo).toFixed(2)}
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid size={{ xs: 6, md: 3 }}><StatCard label="Viajes realizados" value={String(data.totalViajes)} /></Grid>
+        <Grid size={{ xs: 6, md: 3 }}><StatCard label="Recargas" value={String(data.totalRecargas)} accent /></Grid>
+      </Grid>
+
+      <RecentTable
+        title="Últimos Viajes"
+        data={data.ultimosViajes}
+        columns={[
+          { key: 'origen', label: 'Origen' },
+          { key: 'destino', label: 'Destino' },
+          { key: 'costo', label: 'Costo', render: (v: any) => `$${Number(v).toFixed(2)}` },
+          { key: 'estado', label: 'Estado', render: (v: any) => <StatusChip estado={v} /> },
+        ]}
+      />
+    </Box>
   )
 }

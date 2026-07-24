@@ -1,6 +1,13 @@
 import { useState, useEffect, FormEvent } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
 
 export default function RevisarVehiculo() {
   const [vehiculoId, setVehiculoId] = useState('')
@@ -32,22 +39,37 @@ export default function RevisarVehiculo() {
 
   return (
     <Card title="Revisión Vehicular">
-      {msg && <p className="text-primary text-sm text-center mb-4 py-2.5 px-4 bg-primary/10 border border-primary/30 rounded-md">{msg}</p>}
-      {error && <p className="text-error text-sm text-center mb-4 py-2.5 px-4 bg-error/10 border border-error/30 rounded-md">{error}</p>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-[400px]">
-        <select value={vehiculoId} onChange={(e) => setVehiculoId(e.target.value)} required className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all">
-          <option value="">Seleccionar Vehículo</option>
+      {msg && <Alert severity="success" sx={{ mb: 2, borderRadius: 1 }}>{msg}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 1 }}>{error}</Alert>}
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxWidth: 400 }}>
+        <TextField
+          select
+          label="Seleccionar Vehículo"
+          value={vehiculoId}
+          onChange={(e) => setVehiculoId(e.target.value)}
+          required
+          size="small"
+        >
+          <MenuItem value="">Seleccionar Vehículo</MenuItem>
           {vehiculos.filter((v: any) => !v.activo).map((v: any) => (
-            <option key={v.id} value={v.id}>{v.placa} — {v.marca} {v.modelo} ({v.chofer_nombre} {v.chofer_apellido})</option>
+            <MenuItem key={v.id} value={v.id}>{v.placa} — {v.marca} {v.modelo} ({v.chofer_nombre} {v.chofer_apellido})</MenuItem>
           ))}
-        </select>
-        <input placeholder="Calificación (0-100)" type="number" min="0" max="100" value={calificacion} onChange={(e) => setCalificacion(e.target.value)} required className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-        <p className="text-xs text-on-surface-variant">Calificación mínima para apto: 65</p>
-        <button type="submit" className="w-full py-2.5 rounded-lg font-headline font-bold text-sm tracking-widest uppercase text-surface bg-gradient-to-r from-primary to-[#2be088] transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/40 flex items-center justify-center gap-2 disabled:opacity-60" disabled={loading}>
-          {loading && <span className="w-4 h-4 border-2 border-surface border-t-transparent rounded-full animate-spin" />}
+        </TextField>
+        <TextField
+          label="Calificación (0-100)"
+          type="number"
+          value={calificacion}
+          onChange={(e) => setCalificacion(e.target.value)}
+          required
+          size="small"
+          slotProps={{ htmlInput: { min: 0, max: 100 } }}
+        />
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>Calificación mínima para apto: 65</Typography>
+        <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ py: 1.5, gap: 1 }}>
+          {loading && <CircularProgress size={14} />}
           {loading ? 'REGISTRANDO...' : 'Registrar Revisión'}
-        </button>
-      </form>
+        </Button>
+      </Box>
     </Card>
   )
 }

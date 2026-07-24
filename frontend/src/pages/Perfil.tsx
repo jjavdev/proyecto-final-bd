@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import Card from '../components/Card'
+import Grid from '@mui/material/Grid2'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import Box from '@mui/material/Box'
 
 const rolNames: Record<string, string> = {
   ADMIN: 'Administrador',
@@ -23,29 +27,48 @@ export default function Perfil() {
   }, [usuario])
 
   if (!perfil) return (
-    <div className="flex items-center justify-center py-12">
-      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-    </div>
+    <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+      <CircularProgress />
+    </Box>
   )
 
   return (
     <Card title="Mis Datos Personales">
-      <div className="grid grid-cols-2 gap-4 max-w-[500px]">
-        <Campo label="Nombre" valor={`${perfil.nombre} ${perfil.apellido}`} />
-        <Campo label="Cédula" valor={perfil.cedula} />
-        <Campo label="Email" valor={perfil.email} />
-        <Campo label="Teléfono" valor={perfil.telefono} />
-        <Campo label="Rol" valor={rolNames[perfil.rol] || perfil.rol} />
-      </div>
+      <Grid container spacing={2} sx={{ maxWidth: 500 }}>
+        <Grid size={{ xs: 6 }}>
+          <Campo label="Nombre" valor={`${perfil.nombre} ${perfil.apellido}`} />
+        </Grid>
+        <Grid size={{ xs: 6 }}>
+          <Campo label="Cédula" valor={perfil.cedula} />
+        </Grid>
+        <Grid size={{ xs: 6 }}>
+          <Campo label="Email" valor={perfil.email} />
+        </Grid>
+        <Grid size={{ xs: 6 }}>
+          <Campo label="Teléfono" valor={perfil.telefono} />
+        </Grid>
+        <Grid size={{ xs: 6 }}>
+          <Campo label="Rol" valor={rolNames[perfil.rol] || perfil.rol} />
+        </Grid>
+      </Grid>
 
       {usuario?.rol === 'CHOFER' && extra && (
-        <div className="mt-6">
-          <h4 className="text-sm font-semibold tracking-[0.08em] uppercase text-surface-container-high mb-3">Finanzas</h4>
-          <div className="grid grid-cols-2 gap-4 max-w-[500px]">
-            <Campo label="Por cobrar" valor={`$${Math.max(0, extra.saldo_pendiente).toFixed(2)}`} />
-            <Campo label="Cobrado" valor={`$${extra.saldo_pagado.toFixed(2)}`} />
-          </div>
-        </div>
+        <Box sx={{ mt: 4 }}>
+          <Typography
+            variant="overline"
+            sx={{ color: 'text.secondary', mb: 1.5, display: 'block' }}
+          >
+            Finanzas
+          </Typography>
+          <Grid container spacing={2} sx={{ maxWidth: 500 }}>
+            <Grid size={{ xs: 6 }}>
+              <Campo label="Por cobrar" valor={`$${Math.max(0, extra.saldo_pendiente).toFixed(2)}`} />
+            </Grid>
+            <Grid size={{ xs: 6 }}>
+              <Campo label="Cobrado" valor={`$${extra.saldo_pagado.toFixed(2)}`} />
+            </Grid>
+          </Grid>
+        </Box>
       )}
     </Card>
   )
@@ -53,9 +76,13 @@ export default function Perfil() {
 
 function Campo({ label, valor }: { label: string; valor: string }) {
   return (
-    <div>
-      <p className="text-xs text-on-surface-variant m-0">{label}</p>
-      <p className="text-base font-semibold mt-0.5 text-on-surface">{valor}</p>
-    </div>
+    <Box>
+      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+        {label}
+      </Typography>
+      <Typography variant="body1" sx={{ fontWeight: 600, mt: 0.25 }}>
+        {valor}
+      </Typography>
+    </Box>
   )
 }

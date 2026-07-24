@@ -1,6 +1,13 @@
 import { useState, useEffect, FormEvent } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
 
 export default function RecargarSaldo() {
   const [form, setForm] = useState({ monto: '', banco_id: '', nro_referencia: '' })
@@ -33,53 +40,53 @@ export default function RecargarSaldo() {
 
   return (
     <Card title="Recargar Saldo">
-      {msg && <p className="text-primary text-sm text-center mb-4 py-2.5 px-4 bg-primary/10 border border-primary/30 rounded-md">{msg}</p>}
-      {error && <p className="text-error text-sm text-center mb-4 py-2.5 px-4 bg-error/10 border border-error/30 rounded-md">{error}</p>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-[400px]">
-        <input
-          placeholder="Monto ($)"
+      {msg && <Alert severity="success" sx={{ mb: 2, borderRadius: 1 }}>{msg}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 1 }}>{error}</Alert>}
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 400 }}>
+        <TextField
+          label="Monto ($)"
           type="number"
-          step="0.01"
-          min="0.01"
-          max="99999.99"
           value={form.monto}
           onChange={(e) => setForm({ ...form, monto: e.target.value })}
-          className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all"
           required
+          slotProps={{ htmlInput: { step: '0.01', min: '0.01', max: '99999.99' } }}
+          size="small"
         />
         {referencia && (
-          <p className="text-xs text-on-surface-variant/70 -mt-1">
-            Costo promedio por viaje: <span className="text-primary font-semibold">${referencia.promedio.toFixed(2)}</span>
-            {' · '}Sugerido: <span className="text-primary font-semibold">${referencia.sugerido.toFixed(2)}</span>
-          </p>
+          <Typography variant="caption" sx={{ color: 'text.secondary', mt: -0.5 }}>
+            Costo promedio por viaje: <Box component="span" sx={{ color: 'primary.main', fontWeight: 600 }}>${referencia.promedio.toFixed(2)}</Box>
+            {' · '}Sugerido: <Box component="span" sx={{ color: 'primary.main', fontWeight: 600 }}>${referencia.sugerido.toFixed(2)}</Box>
+          </Typography>
         )}
-        <select
+        <TextField
+          select
+          label="Banco"
           value={form.banco_id}
           onChange={(e) => setForm({ ...form, banco_id: e.target.value })}
-          className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all"
           required
+          size="small"
         >
-          <option value="">Seleccionar banco</option>
-          {bancos.map((b) => <option key={b.id} value={b.id}>{b.nombre}</option>)}
-        </select>
-        <input
-          placeholder="Nro. Referencia (4 dígitos)"
-          type="text"
-          maxLength={4}
+          {bancos.map((b) => <MenuItem key={b.id} value={b.id}>{b.nombre}</MenuItem>)}
+        </TextField>
+        <TextField
+          label="Nro. Referencia"
           value={form.nro_referencia}
           onChange={(e) => setForm({ ...form, nro_referencia: e.target.value.replace(/\D/g, '').slice(0, 4) })}
-          className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all"
           required
+          size="small"
+          slotProps={{ htmlInput: { maxLength: 4 } }}
         />
-        <button
+        <Button
           type="submit"
-          className="w-full py-2.5 rounded-lg font-headline font-bold text-sm tracking-widest uppercase text-surface bg-gradient-to-r from-primary to-[#2be088] transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/40 flex items-center justify-center gap-2 disabled:opacity-60"
+          variant="contained"
+          color="primary"
           disabled={loading}
+          sx={{ py: 1.5, gap: 1 }}
         >
-          {loading && <span className="w-4 h-4 border-2 border-surface border-t-transparent rounded-full animate-spin" />}
+          {loading && <CircularProgress size={14} />}
           {loading ? 'RECARGANDO...' : 'Recargar'}
-        </button>
-      </form>
+        </Button>
+      </Box>
     </Card>
   )
 }

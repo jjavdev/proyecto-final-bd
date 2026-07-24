@@ -2,6 +2,11 @@ import { useState } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
 import Table from '../../components/Table'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 
 export default function ViajesAsignados() {
   const [inicio, setInicio] = useState('')
@@ -46,11 +51,13 @@ export default function ViajesAsignados() {
       render: (_: any, row: any) => {
         const isLoading = actionLoading === row.id
         return row.estado === 'pendiente' ? (
-          <button onClick={() => completar(row.id)} disabled={isLoading} className="px-3 py-1.5 rounded-md bg-primary text-xs font-bold text-surface hover:brightness-110 transition-all disabled:opacity-50">
+          <Button onClick={() => completar(row.id)} disabled={isLoading} variant="contained" color="primary" size="small">
             {isLoading ? '...' : 'Completar'}
-          </button>
+          </Button>
         ) : row.estado === 'completado' ? (
-          <span className="text-on-surface-variant italic text-sm">Completado</span>
+          <Typography variant="caption" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+            Completado
+          </Typography>
         ) : null
       },
     },
@@ -58,28 +65,44 @@ export default function ViajesAsignados() {
 
   return (
     <Card title="Mis Viajes">
-      <form onSubmit={handleSubmit} className="flex gap-3 mb-5 items-end flex-wrap">
-        <div>
-          <label className="text-xs text-on-surface-variant block mb-1">Inicio</label>
-          <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-        </div>
-        <div>
-          <label className="text-xs text-on-surface-variant block mb-1">Fin</label>
-          <input type="date" value={fin} onChange={(e) => setFin(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-        </div>
-        <div>
-          <label className="text-xs text-on-surface-variant block mb-1">Estado</label>
-          <select value={estado} onChange={(e) => setEstado(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all">
-            <option value="">Todos</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="completado">Completado</option>
-            <option value="cancelado">Cancelado</option>
-          </select>
-        </div>
-        <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ display: 'flex', gap: 1.5, mb: 2.5, alignItems: 'flex-end', flexWrap: 'wrap' }}
+      >
+        <TextField
+          label="Inicio"
+          type="date"
+          value={inicio}
+          onChange={(e) => setInicio(e.target.value)}
+          size="small"
+          slotProps={{ inputLabel: { shrink: true } }}
+        />
+        <TextField
+          label="Fin"
+          type="date"
+          value={fin}
+          onChange={(e) => setFin(e.target.value)}
+          size="small"
+          slotProps={{ inputLabel: { shrink: true } }}
+        />
+        <TextField
+          select
+          label="Estado"
+          value={estado}
+          onChange={(e) => setEstado(e.target.value)}
+          size="small"
+          sx={{ minWidth: 130 }}
+        >
+          <MenuItem value="">Todos</MenuItem>
+          <MenuItem value="pendiente">Pendiente</MenuItem>
+          <MenuItem value="completado">Completado</MenuItem>
+          <MenuItem value="cancelado">Cancelado</MenuItem>
+        </TextField>
+        <Button type="submit" variant="outlined" disabled={loading} sx={{ py: 1 }}>
           {loading ? '...' : 'Filtrar'}
-        </button>
-      </form>
+        </Button>
+      </Box>
       <Table columns={columns} data={viajes} emptyMsg="No hay viajes para los filtros seleccionados" />
     </Card>
   )

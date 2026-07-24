@@ -2,6 +2,12 @@ import { useState, useEffect, FormEvent } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
 import Table from '../../components/Table'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import Chip from '@mui/material/Chip'
 
 export default function Vehiculos() {
   const [vehiculos, setVehiculos] = useState<any[]>([])
@@ -49,9 +55,9 @@ export default function Vehiculos() {
         if (row.ultima_revision_fecha) {
           const fecha = new Date(row.ultima_revision_fecha).toLocaleDateString()
           const ok = row.ultima_revision_apta && v
-          return <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${ok ? 'bg-primary/20 text-primary' : 'bg-error/20 text-error'}`}>{ok ? `Vigente (${fecha})` : `Vencida (${fecha})`}</span>
+          return <Chip label={ok ? `Vigente (${fecha})` : `Vencida (${fecha})`} color={ok ? 'primary' : 'error'} size="small" variant="outlined" />
         }
-        return <span className="px-2 py-0.5 rounded-full text-xs bg-surface-container-high text-on-surface-variant">Sin revisión</span>
+        return <Chip label="Sin revisión" size="small" variant="outlined" />
       },
     },
   ]
@@ -59,19 +65,36 @@ export default function Vehiculos() {
   return (
     <>
       <Card title="Registrar Vehículo">
-        {msg && <p className="text-primary text-sm text-center mb-4 py-2.5 px-4 bg-primary/10 border border-primary/30 rounded-md">{msg}</p>}
-        {error && <p className="text-error text-sm text-center mb-4 py-2.5 px-4 bg-error/10 border border-error/30 rounded-md">{error}</p>}
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 max-w-[500px]">
-          <input placeholder="Placa" value={form.placa} onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })} required className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-          <input placeholder="Marca" value={form.marca} onChange={(e) => setForm({ ...form, marca: e.target.value })} required className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-          <input placeholder="Modelo" value={form.modelo} onChange={(e) => setForm({ ...form, modelo: e.target.value })} required className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-          <input placeholder="Año" type="number" min="2000" max="2030" value={form.anio} onChange={(e) => setForm({ ...form, anio: e.target.value })} required className="w-full px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-          <input placeholder="Color" value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} required className="w-full col-span-2 px-3 py-2.5 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-          <button type="submit" className="col-span-2 py-2.5 rounded-lg font-headline font-bold text-sm tracking-widest uppercase text-surface bg-gradient-to-r from-primary to-[#2be088] transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/40 flex items-center justify-center gap-2 disabled:opacity-60" disabled={loading}>
-            {loading && <span className="w-4 h-4 border-2 border-surface border-t-transparent rounded-full animate-spin" />}
+        {msg && <Alert severity="success" sx={{ mb: 2, borderRadius: 1 }}>{msg}</Alert>}
+        {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 1 }}>{error}</Alert>}
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, maxWidth: 500 }}
+        >
+          <TextField
+            label="Placa"
+            value={form.placa}
+            onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
+            required
+            size="small"
+          />
+          <TextField label="Marca" value={form.marca} onChange={(e) => setForm({ ...form, marca: e.target.value })} required size="small" />
+          <TextField label="Modelo" value={form.modelo} onChange={(e) => setForm({ ...form, modelo: e.target.value })} required size="small" />
+          <TextField label="Año" type="number" value={form.anio} onChange={(e) => setForm({ ...form, anio: e.target.value })} required size="small" slotProps={{ htmlInput: { min: 2000, max: 2030 } }} />
+          <TextField
+            label="Color"
+            value={form.color}
+            onChange={(e) => setForm({ ...form, color: e.target.value })}
+            required
+            size="small"
+            sx={{ gridColumn: 'span 2' }}
+          />
+          <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ py: 1.5, gridColumn: 'span 2', gap: 1 }}>
+            {loading && <CircularProgress size={14} />}
             {loading ? 'REGISTRANDO...' : 'Registrar'}
-          </button>
-        </form>
+          </Button>
+        </Box>
       </Card>
       <Card title="Mis Vehículos">
         <Table columns={columns} data={vehiculos} emptyMsg="No tienes vehículos registrados" />

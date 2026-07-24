@@ -2,6 +2,10 @@ import { useState } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
 import Table from '../../components/Table'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 
 export default function EvaluacionesChofer() {
   const [choferId, setChoferId] = useState('')
@@ -27,19 +31,27 @@ export default function EvaluacionesChofer() {
 
   return (
     <Card title="Historial de Evaluaciones del Chofer">
-      <form onSubmit={handleSubmit} className="flex gap-3 mb-5 items-end flex-wrap">
-        <div>
-          <label className="text-xs text-on-surface-variant block mb-1">ID del Chofer</label>
-          <input type="number" value={choferId} onChange={(e) => setChoferId(e.target.value)} required className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-        </div>
-        <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ display: 'flex', gap: 1.5, mb: 2.5, alignItems: 'flex-end', flexWrap: 'wrap' }}
+      >
+        <TextField
+          label="ID del Chofer"
+          type="number"
+          value={choferId}
+          onChange={(e) => setChoferId(e.target.value)}
+          required
+          size="small"
+        />
+        <Button type="submit" variant="outlined" disabled={loading}>
           {loading ? '...' : 'Consultar'}
-        </button>
-      </form>
+        </Button>
+      </Box>
       {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress size={24} />
+        </Box>
       ) : (
         <Table columns={columns} data={data} emptyMsg="No hay evaluaciones registradas" />
       )}

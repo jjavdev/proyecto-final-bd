@@ -3,6 +3,9 @@
 // PrivateRoute verifica autenticacion y redirige al login si es necesario.
 
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import theme from './theme/theme'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -20,14 +23,17 @@ function PrivateRoute({ children, roles }: { children: React.ReactNode; roles?: 
 
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }
 

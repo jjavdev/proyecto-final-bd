@@ -2,6 +2,10 @@ import { useState } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
 import Table from '../../components/Table'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import Chip from '@mui/material/Chip'
+import Typography from '@mui/material/Typography'
 
 export default function ListadoChoferes() {
   const [data, setData] = useState<any[]>([])
@@ -28,18 +32,15 @@ export default function ListadoChoferes() {
       key: 'activo', label: 'Activo',
       render: (v: boolean, row: any) => {
         const vigente = row.evaluacion_vigente
-        return (
-          <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${v ? 'bg-primary/20 text-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
-            {v ? 'Sí' : 'No'}
-            {!vigente && v ? ' (Eval. vencida)' : ''}
-          </span>
-        )
+        const label = v ? 'Sí' : 'No'
+        const extra = !vigente && v ? ' (Eval. vencida)' : ''
+        return <Chip label={label + extra} color={v ? 'primary' : 'default'} size="small" variant="outlined" />
       },
     },
     {
       key: 'ultima_evaluacion_nota', label: 'Últ. Evaluación',
       render: (v: number, row: any) => {
-        if (!v) return <span className="text-on-surface-variant/60 italic text-sm">Sin evaluar</span>
+        if (!v) return <Typography variant="caption" sx={{ fontStyle: 'italic', color: 'text.secondary', opacity: 0.6 }}>Sin evaluar</Typography>
         const fecha = row.ultima_evaluacion_fecha ? new Date(row.ultima_evaluacion_fecha).toLocaleDateString() : ''
         return `${v}/100 (${fecha})`
       },
@@ -48,10 +49,10 @@ export default function ListadoChoferes() {
 
   return (
     <Card title="Listado de Choferes">
-      <button onClick={load} disabled={loading} className="mb-4 px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all flex items-center gap-2 disabled:opacity-50">
-        {loading && <span className="w-4 h-4 border-2 border-on-surface border-t-transparent rounded-full animate-spin" />}
+      <Button variant="outlined" onClick={load} disabled={loading} sx={{ mb: 2, gap: 1 }}>
+        {loading && <CircularProgress size={14} />}
         {loading ? 'Cargando...' : 'Cargar Choferes'}
-      </button>
+      </Button>
       <Table columns={columns} data={data} emptyMsg="No hay choferes registrados" />
     </Card>
   )

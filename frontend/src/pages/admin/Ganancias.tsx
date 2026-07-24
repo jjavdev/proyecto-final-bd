@@ -2,6 +2,11 @@ import { useState } from 'react'
 import api from '../../services/api'
 import Card from '../../components/Card'
 import Table from '../../components/Table'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
 
 export default function Ganancias() {
   const [inicio, setInicio] = useState('')
@@ -48,27 +53,39 @@ export default function Ganancias() {
 
   return (
     <Card title="Ganancias por Período">
-      <form onSubmit={handleSubmit} className="flex gap-3 mb-5 items-end flex-wrap">
-        <div>
-          <label className="text-xs text-on-surface-variant block mb-1">Fecha Inicio</label>
-          <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-        </div>
-        <div>
-          <label className="text-xs text-on-surface-variant block mb-1">Fecha Fin</label>
-          <input type="date" value={fin} onChange={(e) => setFin(e.target.value)} className="px-3 py-2 bg-surface border border-outline rounded-lg text-on-surface text-sm outline-none focus:border-primary transition-all" />
-        </div>
-        <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ display: 'flex', gap: 1.5, mb: 2.5, alignItems: 'flex-end', flexWrap: 'wrap' }}
+      >
+        <TextField
+          label="Fecha Inicio"
+          type="date"
+          value={inicio}
+          onChange={(e) => setInicio(e.target.value)}
+          size="small"
+          slotProps={{ inputLabel: { shrink: true } }}
+        />
+        <TextField
+          label="Fecha Fin"
+          type="date"
+          value={fin}
+          onChange={(e) => setFin(e.target.value)}
+          size="small"
+          slotProps={{ inputLabel: { shrink: true } }}
+        />
+        <Button type="submit" variant="outlined" disabled={loading}>
           {loading ? '...' : 'Consultar'}
-        </button>
-        <button type="button" onClick={filtrarTodo} disabled={loading} className="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-sm font-medium border border-outline hover:bg-surface-container transition-all disabled:opacity-50">
+        </Button>
+        <Button type="button" variant="outlined" onClick={filtrarTodo} disabled={loading}>
           Filtrar Todo
-        </button>
-      </form>
-      {error && <p className="text-error text-sm mb-4 py-2.5 px-4 bg-error/10 border border-error/30 rounded-md">{error}</p>}
+        </Button>
+      </Box>
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 1 }}>{error}</Alert>}
       {loading && !data.length ? (
-        <div className="flex items-center justify-center py-8">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress size={24} />
+        </Box>
       ) : (
         <Table columns={columns} data={data} emptyMsg="No hay datos para el período seleccionado" />
       )}
