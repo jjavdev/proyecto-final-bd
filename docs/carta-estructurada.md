@@ -154,5 +154,5 @@ Base de Datos: decarrerita (PostgreSQL 16)
 | ORM | Prisma | 6 |
 | Autenticación | JWT + bcryptjs | — |
 | Validación | Zod | — |
-| UI | Bootstrap 5 | 5.x |
+| UI | Material UI (MUI v6) | 6.x |
 | Containerización | Docker Compose | — |

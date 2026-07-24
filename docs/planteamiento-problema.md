@@ -82,5 +82,7 @@ Los siguientes elementos fueron incorporados por el equipo de desarrollo y no es
 4. **Selección dinámica**: Los formularios administrativos utilizan selects poblados con datos reales (choferes, vehículos, bancos) en lugar de requerir IDs manuales.
 5. **Cancelación con reembolso**: Al cancelar un traslado, el sistema reembolsa automáticamente el costo al saldo del cliente.
 6. **Documentación automática**: Se implementaron herramientas para generar el diagrama E-R y el diccionario de datos automáticamente desde el código.
-7. **Framework CSS**: Se incorporó Bootstrap 5 para mejorar la presentación visual y la experiencia de usuario.
+7. **Migración a Material Design 3 (MUI v6)**: Se reemplazó Bootstrap 5 por Material UI v6 para mejorar la presentación visual y la experiencia de usuario.
 8. **Indicador de vigencia de revisión**: En la lista de vehículos se indica la fecha de la última revisión para facilitar el control anual de revisiones técnicas.
+
+9. **Auto-refresh de saldos**: El saldo del cliente y los stats del chofer se actualizan automáticamente en el sidebar después de cada recarga, pago o solicitud de viaje, sin necesidad de recargar la página manualmente.
