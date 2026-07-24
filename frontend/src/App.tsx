@@ -7,6 +7,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import theme from './theme/theme'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { BalanceProvider } from './context/BalanceContext'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -26,12 +27,14 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
+        <BalanceProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </Routes>
+        </BalanceProvider>
       </AuthProvider>
     </ThemeProvider>
   )

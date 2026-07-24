@@ -1,5 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react'
 import api from '../../services/api'
+import { useBalance } from '../../context/BalanceContext'
 import Card from '../../components/Card'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
@@ -10,6 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 
 export default function RecargarSaldo() {
+  const { refreshBalance } = useBalance()
   const [form, setForm] = useState({ monto: '', banco_id: '', nro_referencia: '' })
   const [bancos, setBancos] = useState<any[]>([])
   const [referencia, setReferencia] = useState<{ promedio: number; sugerido: number } | null>(null)
@@ -30,6 +32,7 @@ export default function RecargarSaldo() {
       await api.post('/clientes/recargar', { ...form, monto: parseFloat(form.monto), banco_id: parseInt(form.banco_id) })
       setMsg('Saldo recargado exitosamente')
       setForm({ monto: '', banco_id: '', nro_referencia: '' })
+      refreshBalance()
     } catch (err: any) {
       const msg = err.response?.data?.error
       setError(typeof msg === 'string' ? msg : 'Error al recargar')

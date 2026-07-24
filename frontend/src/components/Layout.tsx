@@ -1,7 +1,7 @@
-import { ReactNode, useState, useEffect } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useBalance } from '../context/BalanceContext'
 import { useNavigate, useLocation } from 'react-router-dom'
-import api from '../services/api'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
@@ -90,21 +90,14 @@ const menuItems: Record<string, MenuItem[]> = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { usuario, logout } = useAuth()
+  const { saldo, choferStats, refreshBalance } = useBalance()
   const navigate = useNavigate()
   const location = useLocation()
   const items = menuItems[usuario?.rol || ''] || []
 
-  const [saldo, setSaldo] = useState<number | null>(null)
-  const [choferStats, setChoferStats] = useState<{ saldo_pendiente: number; saldo_pagado: number } | null>(null)
-
   useEffect(() => {
-    if (usuario?.rol === 'CLIENTE') {
-      api.get('/clientes/saldo').then((r) => setSaldo(r.data.saldo)).catch(() => {})
-    }
-    if (usuario?.rol === 'CHOFER') {
-      api.get('/choferes/stats').then((r) => setChoferStats(r.data)).catch(() => {})
-    }
-  }, [usuario])
+    refreshBalance()
+  }, [refreshBalance])
 
   function handleLogout() {
     logout()
